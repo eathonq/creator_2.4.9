@@ -13,7 +13,7 @@ class SimpleGraph {
 class SquareGrid {
     private width: number;
     private height: number;
-    private walls: any[][];
+    private walls: boolean[][];
     constructor(width: number, height: number) {
         this.width = width;
         this.height = height;
@@ -39,7 +39,7 @@ class SquareGrid {
 }
 
 class GridWithWeights extends SquareGrid {
-    private weights: [];
+    private weights: number[][];
     constructor(width: number, height: number) {
         super(width, height);
         this.weights = [];
@@ -62,7 +62,7 @@ class Queue {
         return this.elements.length == 0;
     }
 
-    put(item) {
+    put(item: { x: number; y: number; }) {
         this.elements.push(item);
     }
 
@@ -81,7 +81,7 @@ class PriorityQueue {
         return this.elements.length == 0;
     }
 
-    put(item, priority) {
+    put(item: { x: number; y: number; }, priority: number) {
         let added = false;
         for (let i = 0; i < this.elements.length; i++) {
             if (this.elements[i].priority > priority) {
@@ -148,7 +148,7 @@ class Algorithms {
         frontier.put(start, 0);
         let came_from: any[][] = [];
         came_from[start.x][start.y] = start;
-        let cost_so_far: any[][] = [];
+        let cost_so_far: number[][] = [];
         cost_so_far[start.x][start.y] = 0;
 
         while (!frontier.empty()) {
@@ -228,7 +228,7 @@ class Algorithms {
         frontier.put(start, 0);
         let came_from: any[][] = [];
         came_from[start.x][start.y] = start;
-        let cost_so_far: any[][] = [];
+        let cost_so_far: number[][] = [];
         cost_so_far[start.x][start.y] = 0;
 
         while (!frontier.empty()) {
@@ -252,5 +252,3 @@ class Algorithms {
     }
 }
 //#endregion
-
-export const algorithms = new Algorithms();
