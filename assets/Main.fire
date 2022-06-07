@@ -2083,14 +2083,17 @@
     "_id": "91u3R7w9ZMI5ZpxuYTo8dw"
   },
   {
-    "__type__": "d8232OQFiZNR5Gtou31OY2C",
+    "__type__": "3363eQRZnJIcomba8KxHM6f",
     "_name": "",
     "_objFlags": 0,
     "node": {
       "__id__": 2
     },
     "_enabled": true,
-    "_id": "c5cla81rJAKLRIal42suCR"
+    "guideContent": {
+      "__id__": 4
+    },
+    "_id": "3acnGKyZVMwaeFEw9SbWw5"
   },
   {
     "__type__": "cc.Node",

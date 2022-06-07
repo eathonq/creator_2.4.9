@@ -11,7 +11,7 @@ import EventNode from "./EventNode";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class GameEventDemo extends cc.Component {
+export default class GameEventData extends cc.Component {
     @property(cc.Button)
     private addButton: cc.Button = null;
 

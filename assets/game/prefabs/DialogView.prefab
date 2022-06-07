@@ -221,7 +221,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "79802563-357c-4828-888c-b3682fe12993"
+      "__id__": 0
     },
     "fileId": "15QdbMr7VIE6S83FFK5RQc",
     "sync": false
@@ -305,7 +305,6 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_useOriginalSize": false,
     "_string": "Dialog",
     "_N$string": "Dialog",
     "_fontSize": 40,
@@ -330,7 +329,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "79802563-357c-4828-888c-b3682fe12993"
+      "__id__": 0
     },
     "fileId": "1brNuWvb1HUaog9OXm3Yo7",
     "sync": false
@@ -414,7 +413,6 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_useOriginalSize": false,
     "_string": "dialog content:\n1.message.;\n2.message;",
     "_N$string": "dialog content:\n1.message.;\n2.message;",
     "_fontSize": 30,
@@ -439,7 +437,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "79802563-357c-4828-888c-b3682fe12993"
+      "__id__": 0
     },
     "fileId": "acjVJjdYNEvZyT6kQR5WEt",
     "sync": false
@@ -662,7 +660,6 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_useOriginalSize": false,
     "_string": "X",
     "_N$string": "X",
     "_fontSize": 20,
@@ -687,7 +684,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "79802563-357c-4828-888c-b3682fe12993"
+      "__id__": 0
     },
     "fileId": "3bSzwu0iBDE4yRdrvtmHfB",
     "sync": false
@@ -757,7 +754,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "79802563-357c-4828-888c-b3682fe12993"
+      "__id__": 0
     },
     "fileId": "a6GlFR4kVObpHb7wDKtGfG",
     "sync": false
@@ -864,7 +861,7 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "79802563-357c-4828-888c-b3682fe12993"
+      "__id__": 0
     },
     "fileId": "6b742ZWbNGjqfyZfzOoNED",
     "sync": false
@@ -900,9 +897,9 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "79802563-357c-4828-888c-b3682fe12993"
+      "__id__": 0
     },
-    "fileId": "4bKmaRQRtLl6Jr7zhA7G44",
+    "fileId": "",
     "sync": false
   }
 ]

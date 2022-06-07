@@ -10,7 +10,7 @@ import { i18n, I18nMode } from "../../core/i18n/LanguageData";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class I18nDemo extends cc.Component {
+export default class I18nData extends cc.Component {
 
     @property({
         type: cc.Slider,

@@ -10,7 +10,7 @@ import ViewManager from "../../core/common/ViewManager";
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class DialogView extends cc.Component {
+export default class DialogData extends cc.Component {
 
     @property(cc.Label)
     label: cc.Label = null;

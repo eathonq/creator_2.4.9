@@ -44,16 +44,20 @@ export default class ScrollListViewData extends cc.Component {
 
     // onLoad () {}
 
-    start() {
+    protected start() {
         this.initScrollListView();
         this.initScrollView();
 
         this.initHScrollView();
         this.initGScrollView();
+
+        this.scrollView.node.active = true;
+        this.hScrollView.node.active = false;
+        this.gScrollView.node.active = false;
     }
 
     private _array: any[] = [];
-    initScrollListView(){
+    private initScrollListView(){
         for (let i = 0; i < 500; i++) {
             this._array.push({
                 type: i % 2 === 0 ? "a" : "b",
@@ -64,7 +68,7 @@ export default class ScrollListViewData extends cc.Component {
         this.listView.initWithTemplate(this.onLoadEvent.bind(this), this.onUpdateItem.bind(this));
     }
 
-    onLoadEvent(type: ScrollListViewEvent, index: number) {
+    private onLoadEvent(type: ScrollListViewEvent, index: number) {
         switch (type) {
             case ScrollListViewEvent.MORE:
                 //cc.log("scroll load more");
@@ -84,7 +88,7 @@ export default class ScrollListViewData extends cc.Component {
         return null;
     }
 
-    onUpdateItem(item: cc.Node,
+    private onUpdateItem(item: cc.Node,
         data: { type: number | string, title, content },
         index: number) {
 
@@ -111,7 +115,7 @@ export default class ScrollListViewData extends cc.Component {
         }, this);
     }
 
-    initScrollView() {
+    private initScrollView() {
         let onLoadMore = () => {
             let max = 500;
             let start = this.scrollView.content.children.length;
@@ -131,7 +135,7 @@ export default class ScrollListViewData extends cc.Component {
         scrollViewDynamic.refresh();
     }
 
-    initHScrollView(){
+    private initHScrollView(){
         let onLoadMore = ()=>{
             let max = 500;
             let start = this.hScrollView.content.children.length;
@@ -152,7 +156,7 @@ export default class ScrollListViewData extends cc.Component {
         scrollViewDynamic.refresh();
     }
 
-    initGScrollView(){
+    private initGScrollView(){
         let onLoadMore = (count = 10)=>{
             let max = 500;
             let start = this.gScrollView.content.children.length;
@@ -172,4 +176,24 @@ export default class ScrollListViewData extends cc.Component {
         scrollViewDynamic.setPreloadMore(100, onLoadMore);
         scrollViewDynamic.refresh();
     }
+
+    onToggleEvent(toggle: cc.Toggle) {
+        switch (toggle.name) {
+            case "1<Toggle>":
+                this.scrollView.node.active = true;
+                this.hScrollView.node.active = false;
+                this.gScrollView.node.active = false;
+                break;
+            case "2<Toggle>":
+                this.hScrollView.node.active = true;
+                this.scrollView.node.active = false;
+                this.gScrollView.node.active = false;
+                break;
+            case "3<Toggle>":
+                this.gScrollView.node.active = true;
+                this.scrollView.node.active = false;
+                this.hScrollView.node.active = false;
+                break;
+        }
+    } 
 }
