@@ -98,18 +98,18 @@ export class PriorityQueue {
         let added = false;
         for (let i = 0; i < this.elements.length; i++) {
             if (this.elements[i].priority > priority) {
-                this.elements.splice(i, 0, item);
+                this.elements.splice(i, 0, { item, priority });
                 added = true;
                 break;
             }
         }
         if (!added) {
-            this.elements.push(item);
+            this.elements.splice(0, 0, { item, priority });
         }
     }
 
     get() {
-        return this.elements.shift();
+        return this.elements.shift().item;
     }
 }
 
@@ -162,7 +162,7 @@ export class Algorithms {
         let came_from = {};
         came_from[`${start.x}_${start.y}`] = {};
         let cost_so_far = {};
-        cost_so_far[`${start.x}_${start.y}`] = 0;
+        cost_so_far[`${start.x}_${start.y}`] = 1;
 
         while (!frontier.empty()) {
             let current = frontier.get();
@@ -221,7 +221,7 @@ export class Algorithms {
         // 欧几里得距离
         // let dx = Math.abs(a.x - b.x);
         // let dy = Math.abs(a.y - b.y);
-        // return (Math.sqrt(dx*dx + dy*dy))*this.distance_multiplier;
+        // return (Math.sqrt(dx*dx + dy*dy)) * this.distance_multiplier;
     }
 
     /**
@@ -242,7 +242,7 @@ export class Algorithms {
         let came_from = {};
         came_from[`${start.x}_${start.y}`] = {};
         let cost_so_far = {};
-        cost_so_far[`${start.x}_${start.y}`] = 0;
+        cost_so_far[`${start.x}_${start.y}`] = 1;
 
         while (!frontier.empty()) {
             let current = frontier.get();
