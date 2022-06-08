@@ -232,19 +232,19 @@ export default class ViewManager extends cc.Component {
 
     @property({
         tooltip: "默认视图",
-        readonly: true
+        readonly: false
     })
     private defaultView: string = "";
 
     @property({
         tooltip: "默认视图",
-        readonly: true
+        readonly: false
     })
     private defaultDialog: string = "";
 
     @property({
         tooltip: "默认视图",
-        readonly: true
+        readonly: false
     })
     private defaultTooltip: string = "";
 
@@ -292,7 +292,11 @@ export default class ViewManager extends cc.Component {
         }
     }
 
-    protected start(): void { }
+    protected start(): void {
+        if (this.defaultView != "") {
+            this.show(this.defaultView);
+        }
+    }
 
     private checkEditorDefaultName(): void {
         this.defaultView = "";
@@ -324,7 +328,7 @@ export default class ViewManager extends cc.Component {
         //     }
         // }
         let viewName = "";
-        this.viewTemplateMap.forEach((value,key) => {
+        this.viewTemplateMap.forEach((value, key) => {
             if (value.viewBase.viewType === viewType && value.viewBase.isDefault) {
                 viewName = value.viewBase.viewName;
                 return;
@@ -340,7 +344,7 @@ export default class ViewManager extends cc.Component {
         let viewTemplate = this.viewTemplateMap.get(name);
         if (!viewTemplate) return null;
 
-        let viewData:ViewData = null;
+        let viewData: ViewData = null;
         if (viewTemplate.node instanceof cc.Prefab) {
             let newViewNode = cc.instantiate(viewTemplate.node);
             let newViewBase = newViewNode.getComponent(ViewBase);

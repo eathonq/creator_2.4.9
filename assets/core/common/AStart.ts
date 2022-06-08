@@ -1,6 +1,7 @@
+// 参考 https://github.com/melkir/A-Star-Python
 
 //#region Graph
-class SimpleGraph {
+export class SimpleGraph {
     edges: any[][];
     constructor() {
         this.edges = [];
@@ -10,14 +11,19 @@ class SimpleGraph {
     }
 }
 
-class SquareGrid {
+export class SquareGrid {
     private width: number;
     private height: number;
-    private walls: boolean[][];
-    constructor(width: number, height: number) {
+    private walls: {};
+    constructor(width: number, height: number, walls?: { x: number, y: number }[]) {
         this.width = width;
         this.height = height;
-        this.walls = [];
+        this.walls = {};
+        if (walls) {
+            for (let wall of walls) {
+                this.walls[`${wall.x}_${wall.y}`] = true;
+            }
+        }
     }
 
     private inBounds(id: { x: number; y: number; }) {
@@ -25,7 +31,7 @@ class SquareGrid {
     }
 
     private passable(id: { x: number; y: number; }) {
-        return !this.walls[id.x][id.y];
+        return !this.walls[`${id.x}_${id.y}`];
     }
 
     neighbors(id: { x: number; y: number; }) {
@@ -38,21 +44,28 @@ class SquareGrid {
     }
 }
 
-class GridWithWeights extends SquareGrid {
-    private weights: number[][];
-    constructor(width: number, height: number) {
-        super(width, height);
-        this.weights = [];
+export class GridWithWeights extends SquareGrid {
+    private weights: {};
+    constructor(width: number, height: number, walls?: { x: number, y: number }[], weights?: { x: number, y: number, weight: number }[]) {
+        super(width, height, walls);
+        this.weights = weights;
+
+        this.weights = {};
+        if (weights) {
+            for (let weight of weights) {
+                this.weights[`${weight.x}_${weight.y}`] = weight.weight;
+            }
+        }
     }
 
     cost(from: { x: number; y: number; }, to: { x: number; y: number; }) {
-        return this.weights[to.x][to.y] || 1;
+        return this.weights[`${to.x}_${to.y}`] || 1;
     }
 }
 //#endregion
 
 //#region Queue
-class Queue {
+export class Queue {
     private elements: any[];
     constructor() {
         this.elements = [];
@@ -71,7 +84,7 @@ class Queue {
     }
 }
 
-class PriorityQueue {
+export class PriorityQueue {
     private elements: any[];
     constructor() {
         this.elements = [];
@@ -105,19 +118,19 @@ class PriorityQueue {
 //#region Algorithms
 
 /** 寻路算法 */
-class Algorithms {
+export class Algorithms {
     /**
      * 广度优先搜索
      * @param graph 图 
      * @param start 起点
      * @param goal 终点
-     * @returns 路径(二维路径数组)
+     * @returns 路径(Map)
      */
-    breadth_first_search(graph: SquareGrid, start: { x: number; y: number; }, goal: { x: number; y: number; }) {
+    static breadth_first_search(graph: SquareGrid, start: { x: number; y: number; }, goal: { x: number; y: number; }) {
         let frontier = new Queue();
         frontier.put(start);
-        let came_from: any[][] = [];
-        came_from[start.x][start.y] = start;
+        let came_from = {};
+        came_from[`${start.x}_${start.y}`] = {};
 
         while (!frontier.empty()) {
             let current = frontier.get();
@@ -126,14 +139,14 @@ class Algorithms {
                 break;
 
             for (let next of graph.neighbors(current)) {
-                if (!came_from[next.x][next.y]) {
+                if (!came_from[`${next.x}_${next.y}`]) {
                     frontier.put(next);
-                    came_from[next.x][next.y] = current;
+                    came_from[`${next.x}_${next.y}`] = current;
                 }
             }
-
-            return came_from;
         }
+
+        return came_from;
     }
 
     /**
@@ -141,15 +154,15 @@ class Algorithms {
      * @param graph 图
      * @param start 起点
      * @param goal 终点
-     * @returns 路径(二维路径数组)
+     * @returns 路径(Map)
      */
-    dijkstra_search(graph: GridWithWeights, start: { x: number; y: number; }, goal: { x: number; y: number; }) {
+    static dijkstra_search(graph: GridWithWeights, start: { x: number; y: number; }, goal: { x: number; y: number; }) {
         let frontier = new PriorityQueue();
         frontier.put(start, 0);
-        let came_from: any[][] = [];
-        came_from[start.x][start.y] = start;
-        let cost_so_far: number[][] = [];
-        cost_so_far[start.x][start.y] = 0;
+        let came_from = {};
+        came_from[`${start.x}_${start.y}`] = {};
+        let cost_so_far = {};
+        cost_so_far[`${start.x}_${start.y}`] = 0;
 
         while (!frontier.empty()) {
             let current = frontier.get();
@@ -158,12 +171,12 @@ class Algorithms {
                 break;
 
             for (let next of graph.neighbors(current)) {
-                let new_cost = cost_so_far[current.x][current.y] + graph.cost(current, next);
-                if (!cost_so_far[next.x][next.y] || new_cost < cost_so_far[next.x][next.y]) {
-                    cost_so_far[next.x][next.y] = new_cost;
+                let new_cost = cost_so_far[`${current.x}_${current.y}`] + graph.cost(current, next);
+                if (!cost_so_far[`${next.x}_${next.y}`] || new_cost < cost_so_far[`${next.x}_${next.y}`]) {
+                    cost_so_far[`${next.x}_${next.y}`] = new_cost;
                     let priority = new_cost;
                     frontier.put(next, priority);
-                    came_from[next.x][next.y] = current;
+                    came_from[`${next.x}_${next.y}`] = current;
                 }
             }
         }
@@ -173,17 +186,17 @@ class Algorithms {
 
     /**
      * 重建路径
-     * @param came_from 路径(二维路径数组)
+     * @param came_from 路径(Map)
      * @param start 起点
      * @param goal 终点
-     * @returns 路径
+     * @returns 路径(Array)
      */
-    reconstruct_path(came_from: any[][], start: { x: number; y: number; }, goal: { x: number; y: number; }) {
+    static reconstruct_path(came_from: {}, start: { x: number; y: number; }, goal: { x: number; y: number; }) {
         let current = goal;
         let path = [];
         while (current != start) {
             path.push(current);
-            current = came_from[current.x][current.y];
+            current = came_from[`${current.x}_${current.y}`];
         }
         path.push(start);
         path.reverse();
@@ -196,7 +209,7 @@ class Algorithms {
      * @param b 点b
      * @returns heuristic 值
      */
-    heuristic(a: { x: number; y: number; }, b: { x: number; y: number; }) {
+    static heuristic(a: { x: number; y: number; }, b: { x: number; y: number; }) {
         // 曼哈顿距离
         return (Math.abs(a.x - b.x) + Math.abs(a.y - b.y)) * this.distance_multiplier;
 
@@ -214,22 +227,22 @@ class Algorithms {
     /**
      * 两个相邻点之间移动的代价
      */
-    distance_multiplier = 1;
+    static distance_multiplier = 1;
 
     /**
      * A*算法
      * @param graph 图 
      * @param start 起点
      * @param goal 终点
-     * @returns 路径(二维路径数组)
+     * @returns 路径(Map)
      */
-    a_star_search(graph: GridWithWeights, start: { x: number; y: number; }, goal: { x: number; y: number; }) {
+    static a_star_search(graph: GridWithWeights, start: { x: number; y: number; }, goal: { x: number; y: number; }) {
         let frontier = new PriorityQueue();
         frontier.put(start, 0);
-        let came_from: any[][] = [];
-        came_from[start.x][start.y] = start;
-        let cost_so_far: number[][] = [];
-        cost_so_far[start.x][start.y] = 0;
+        let came_from = {};
+        came_from[`${start.x}_${start.y}`] = {};
+        let cost_so_far = {};
+        cost_so_far[`${start.x}_${start.y}`] = 0;
 
         while (!frontier.empty()) {
             let current = frontier.get();
@@ -238,12 +251,12 @@ class Algorithms {
                 break;
 
             for (let next of graph.neighbors(current)) {
-                let new_cost = cost_so_far[current.x][current.y] + graph.cost(current, next);
-                if (!cost_so_far[next.x][next.y] || new_cost < cost_so_far[next.x][next.y]) {
-                    cost_so_far[next.x][next.y] = new_cost;
+                let new_cost = cost_so_far[`${current.x}_${current.y}`] + graph.cost(current, next);
+                if (!cost_so_far[`${next.x}_${next.y}`] || new_cost < cost_so_far[`${next.x}_${next.y}`]) {
+                    cost_so_far[`${next.x}_${next.y}`] = new_cost;
                     let priority = new_cost + this.heuristic(goal, next);
                     frontier.put(next, priority);
-                    came_from[next.x][next.y] = current;
+                    came_from[`${next.x}_${next.y}`] = current;
                 }
             }
         }

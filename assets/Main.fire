@@ -2063,7 +2063,7 @@
     "viewContent": {
       "__id__": 10
     },
-    "defaultView": "",
+    "defaultView": "AStartPathDemo",
     "defaultDialog": "DialogView",
     "defaultTooltip": "",
     "_viewPrefabList": [
@@ -2078,6 +2078,9 @@
       },
       {
         "__uuid__": "94dfc770-ee29-4362-ab76-7be817fc2dc9"
+      },
+      {
+        "__uuid__": "cf8ab956-c578-490d-bc08-0ca18dda92af"
       }
     ],
     "_id": "91u3R7w9ZMI5ZpxuYTo8dw"
