@@ -2171,7 +2171,7 @@
     "musicClip": {
       "__uuid__": "f4e18f3e-5ff2-4311-8f80-887881722782"
     },
-    "playOnLoad": true,
+    "playOnLoad": false,
     "_id": "f4f0EZn0ZGS6TwryuIVAaZ"
   }
 ]
