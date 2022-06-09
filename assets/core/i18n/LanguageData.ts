@@ -1,13 +1,13 @@
 import { config } from "../common/Configuration";
-import { format, stringFormat } from "../common/StringFormat";
+import { format } from "../common/StringFormat";
 import { languageLoad } from "./LanguageLoad";
 import { LocalizedLabel } from "./LocalizedLabel";
 import { LocalizedSprite } from "./LocalizedSprite";
 
+const LOCAL_LANGUAGE_KEY = 'language';  // 本地语言 key
 const PARAMETER_MARK = '#';             // 参数开始标记
 const PARAMETER_SPLIT = '$';            // 参数分隔符
 const DEFAULT_LANGUAGE = 'zh';          // 默认语言
-const LOCAL_LANGUAGE_KEY = 'language';  // 本地语言 key
 
 /** i18n显示模式 */
 export enum I18nMode {

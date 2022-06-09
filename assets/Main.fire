@@ -2063,7 +2063,7 @@
     "viewContent": {
       "__id__": 10
     },
-    "defaultView": "AStartPathDemo",
+    "defaultView": "",
     "defaultDialog": "DialogView",
     "defaultTooltip": "",
     "_viewPrefabList": [

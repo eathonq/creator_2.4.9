@@ -45,6 +45,8 @@ export class LocalizedSpriteFrameSet extends cc.Component {
         this.checkEditorComponent(true);
     }
 
+    protected start(): void {}
+
     private checkEditorComponent(isDestroy: boolean = false) {
         let localizedSprite = this.node.getComponent(LocalizedSprite);
         if (localizedSprite) {
