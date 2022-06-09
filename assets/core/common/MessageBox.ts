@@ -1,64 +1,64 @@
-/**
- * 消息框按钮
- */
+import ViewManager from "./ViewManager";
+
+/** 消息框按钮 */
 export const enum MessageBoxButtons {
-    /* 消息框包含“确定”按钮。 */
-    ButtonsOK = 0,
-    /* 消息框包含“确定”和“取消”按钮。 */
-    ButtonsOKCancel = 1,
     /* 消息框无按钮。 */
-    ButtonsNone = 2,
+    None = 0,
+    /* 消息框包含“确定”按钮。 */
+    OK = 1,
+    /* 消息框包含“确定”和“取消”按钮。 */
+    OKCancel = 2,
+
+    AbortRetryIgnore,
+    YesNo,
+    YesNoCancel,
 }
 
-/**
- * 消息框结果
- */
-export const enum MessageResult {
-    /** 取消 */
-    ResultCancel = 0,
+/** 消息框结果 */
+export const enum DialogResult {
+    /** Nothing */
+    None = 0,
     /** 确定 */
-    ResultOK = 1,
+    OK = 1,
+    /** 取消 */
+    Cancel = 2,
+    /** 中止 */
+    Abort = 3,
+    /** 重试 */
+    Retry = 4,
+    /** 忽略 */
+    Ignore = 5,
+
+    Yes = 6,
+    No = 7,
 }
 
-/**
- * 消息框数据
- */
+/** 消息框 */
 export class MessageBox {
-    public title: string = "";
-    public message: string;
-    public callback: Function;
-    public target: any;
-    public buttons: MessageBoxButtons = MessageBoxButtons.ButtonsOK;
-    public constructor(title: string, message: string, callback: Function, target: any, buttons: MessageBoxButtons) {
-        this.title = title;
-        this.message = message;
-        this.callback = callback;
-        this.target = target;
-        this.buttons = buttons;
+    /**
+     * 显示消息框
+     * @param message 消息内容 
+     * @param title 标题
+     * @param buttons 按钮类型
+     * @returns 
+     */
+    static async Show(message: string, title?: string, buttons: MessageBoxButtons = MessageBoxButtons.OK) {
+        return new Promise<DialogResult>((resolve, reject) => {
+            let data = { title: title, message: message, buttons: buttons, callback: resolve };
+            ViewManager.instance.showDialog(null, data);
+        });
     }
 
-    doCallback(result: MessageResult) {
-        if (this.callback) {
-            if (this.target) {
-                this.callback.call(this.target, result);
-            } else {
-                this.callback(result);
-            }
-        }
+    /**
+     * 显示消息框
+     * @param dialogName 弹窗名称 
+     * @param data 消息内容
+     * @returns 
+     */
+    static async ShowDialog(dialogName: string, data: any) {
+        return new Promise<DialogResult>((resolve, reject) => {
+            data.callback = resolve;
+            ViewManager.instance.showDialog(dialogName, data);
+        });
     }
-}
-
-/**
- * 消息框数据
- * @param message 消息框消息
- * @param callback 消息框回调
- * @param target 消息框回调对象
- * @param other 消息框其他参数
- * @returns 消息框数据
- */
-export let message = (message: string, callback?:Function, target?:any, other?: {title:string,buttons:MessageBoxButtons}) => {
-    let tile = other ? other.title : "";
-    let buttons = other ? other.buttons : MessageBoxButtons.ButtonsOK;
-    let dialog = new MessageBox(tile, message, callback, target, buttons);
-    return dialog;
 }

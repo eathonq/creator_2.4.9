@@ -5,9 +5,7 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-import { gameEvent } from "../../core/common/GameEvent";
-import { message } from "../../core/common/MessageBox";
-import ViewManager from "../../core/common/ViewManager";
+import { MessageBox, DialogResult } from "../../core/common/MessageBox";
 import EventNode from "./EventNode";
 
 const { ccclass, property } = cc._decorator;
@@ -65,9 +63,14 @@ export default class GameEventData extends cc.Component {
         }
     }
 
-    private emitButtonClick(): void {
+    private async emitButtonClick() {
         //gameEvent.emit("test_event", "emit test_event");
-
-        ViewManager.instance.showDialog("DialogDemo", message("自定义消息"));
+        let result = await MessageBox.Show("消息框消息", "消息框标题");
+        if (result == DialogResult.OK) {
+            console.log("点击了确定按钮");
+        }
+        else if (result == DialogResult.Cancel) {
+            console.log("点击了取消按钮");
+        }
     }
 }
