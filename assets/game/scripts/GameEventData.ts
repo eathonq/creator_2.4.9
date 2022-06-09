@@ -6,6 +6,8 @@
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
 import { gameEvent } from "../../core/common/GameEvent";
+import { message } from "../../core/common/MessageBox";
+import ViewManager from "../../core/common/ViewManager";
 import EventNode from "./EventNode";
 
 const { ccclass, property } = cc._decorator;
@@ -64,6 +66,8 @@ export default class GameEventData extends cc.Component {
     }
 
     private emitButtonClick(): void {
-        gameEvent.emit("test_event", "emit test_event");
+        //gameEvent.emit("test_event", "emit test_event");
+
+        ViewManager.instance.showDialog("DialogDemo", message("自定义消息"));
     }
 }
