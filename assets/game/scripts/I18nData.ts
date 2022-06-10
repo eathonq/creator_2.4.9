@@ -62,7 +62,7 @@ export default class I18nData extends cc.Component {
         }
     }
 
-    onLanguageChange(event: Event, customEventData: string): void {
+    onLanguageChangeEvent(event: Event, customEventData: string): void {
         switch (customEventData) {
             case "zh":
                 this.changeLanguage(LanguageType.CHINESE);

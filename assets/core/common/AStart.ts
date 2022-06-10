@@ -214,6 +214,8 @@ export class Algorithms {
         while (current != start) {
             path.push(current);
             current = came_from[`${current.x}_${current.y}`];
+            if (current == undefined)
+                break;
         }
         path.push(start);
         path.reverse();

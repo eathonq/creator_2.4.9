@@ -52,12 +52,12 @@ export class MessageBox {
     }
 
     /**
-     * 显示消息框
-     * @param dialog 弹窗类型名称 
-     * @param data 弹窗数据
+     * 显示Dialog
+     * @param dialog 对话框类型名称 
+     * @param data 对话框数据
      * @returns 
      */
-    static async ShowDialog(dialog: string, data?: any) {
+    static async Dialog(dialog: string, data?: any) {
         if (!data) data = {};
         return new Promise<DialogResult>((resolve, reject) => {
             data.callback = resolve;

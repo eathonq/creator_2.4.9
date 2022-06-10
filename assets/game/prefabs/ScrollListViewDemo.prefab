@@ -459,7 +459,7 @@
         "__id__": 123
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [
       {
         "__id__": 195
@@ -4623,7 +4623,7 @@
         "__id__": 159
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [],
     "_prefab": {
       "__id__": 194
@@ -7481,7 +7481,7 @@
         "__id__": 217
       }
     ],
-    "_active": true,
+    "_active": false,
     "_components": [],
     "_prefab": {
       "__id__": 289
