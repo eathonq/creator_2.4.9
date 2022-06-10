@@ -205,7 +205,6 @@ export default class ScrollViewDynamic extends cc.Component {
         }
     }
 
-
     private _preloadUnit = 0;
     private _onPreloadMore = null;
     private _target = null;

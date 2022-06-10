@@ -80,7 +80,7 @@ export class ViewBase extends cc.Component {
     }
 
     closeCallback:Function = null;
-    onClickCloseEvent(event: cc.Event.EventTouch, customEventData: string) {
+    onCloseEvent(event: cc.Event.EventTouch, customEventData: string) {
         if (this.closeCallback) {
             this.closeCallback(this.viewName);
         }

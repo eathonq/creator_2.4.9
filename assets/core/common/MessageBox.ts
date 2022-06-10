@@ -40,25 +40,28 @@ export class MessageBox {
      * @param message 消息内容 
      * @param title 标题
      * @param buttons 按钮类型
+     * @param dialog 指定弹窗类型名称
      * @returns 
      */
-    static async Show(message: string, title?: string, buttons: MessageBoxButtons = MessageBoxButtons.OK) {
+    static async Show(message: string, title?: string, buttons?: MessageBoxButtons, dialog?: string) {
+        if (buttons == undefined) buttons = MessageBoxButtons.OK;
         return new Promise<DialogResult>((resolve, reject) => {
             let data = { title: title, message: message, buttons: buttons, callback: resolve };
-            ViewManager.instance.showDialog(null, data);
+            ViewManager.instance.showDialog(dialog, data);
         });
     }
 
     /**
      * 显示消息框
-     * @param dialogName 弹窗名称 
-     * @param data 消息内容
+     * @param dialog 弹窗类型名称 
+     * @param data 弹窗数据
      * @returns 
      */
-    static async ShowDialog(dialogName: string, data: any) {
+    static async ShowDialog(dialog: string, data?: any) {
+        if (!data) data = {};
         return new Promise<DialogResult>((resolve, reject) => {
             data.callback = resolve;
-            ViewManager.instance.showDialog(dialogName, data);
+            ViewManager.instance.showDialog(dialog, data);
         });
     }
 }

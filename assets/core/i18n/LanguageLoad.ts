@@ -1,5 +1,4 @@
-import { i18n_en } from "../../resources/i18n/en";
-import { i18n_zh } from "../../resources/i18n/zh";
+import { lang } from "../../resources/i18n/language";
 
 class LanguageLoad {
     //#region instance
@@ -21,21 +20,12 @@ class LanguageLoad {
      */
     loadRecords(language: string): { [key: string]: string } {
         let data: { [key: string]: string } = {};
-        let records = [];
-        switch (language) {
-            case "zh":
-            case "zh_CN":
-                records = i18n_zh.records;
-                break;
-            case "en":
-                records = i18n_en.records;
-                break;
-            default:
-                break;
-        }
-        for (let i = 0; i < records.length; i++) {
-            let record = records[i];
-            data[record[1]] = record[2];
+        let records = lang.records(language);
+        if (records) {
+            for (let i = 0; i < records.length; i++) {
+                let record = records[i];
+                data[record[1]] = record[2];
+            }
         }
 
         return data;
