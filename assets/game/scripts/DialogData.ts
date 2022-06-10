@@ -13,33 +13,6 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class DialogData extends cc.Component {
 
-    //#region mask
-    @property(cc.Mask)
-    mask: cc.Mask = null;
-
-    protected onEnable(): void {
-        if (!this.mask) {
-            cc.error("mask is null");
-            return;
-        }
-        this.mask.node.on(cc.Node.EventType.TOUCH_START, this.stopPropagation, this);
-        this.mask.node.on(cc.Node.EventType.TOUCH_END, this.stopPropagation, this);
-    }
-
-    protected onDisable(): void {
-        if (!this.mask) {
-            cc.error("mask is null");
-            return;
-        }
-        this.mask.node.off(cc.Node.EventType.TOUCH_START, this.stopPropagation, this);
-        this.mask.node.off(cc.Node.EventType.TOUCH_END, this.stopPropagation, this);
-    }
-
-    private stopPropagation(event: cc.Event.EventTouch): void {
-        event.stopPropagation();
-    }
-    //#endregion
-
     @property(cc.Label)
     title: cc.Label = null;
 

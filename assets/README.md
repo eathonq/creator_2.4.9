@@ -11,8 +11,8 @@
             # prefabs           # 预制体
             # scripts           # 脚本
         # resources         # 资源
-            # i18n              # 语言包
             # fonts             # 字体
+            # i18n              # 语言包
             # images            # 图片
             # sounds            # 音效
 
