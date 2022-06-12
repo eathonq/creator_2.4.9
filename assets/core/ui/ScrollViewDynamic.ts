@@ -110,7 +110,7 @@ export default class ScrollViewDynamic extends cc.Component {
 
         // 单元滚动通知
         if (offsetYUnit != this._offsetYUnit) {
-            if(offsetYUnit < 0) return;
+            if (offsetYUnit < 0) return;
             if (offsetYUnit > scrollView.content.height / this.scrollUnit) return;
 
             this._offsetYUnit = offsetYUnit;
@@ -223,9 +223,32 @@ export default class ScrollViewDynamic extends cc.Component {
      * @param onPreloadMore 预加载回调
      * @param target 预加载回调对象
      */
-    setPreloadMore(preloadUnit:number, onPreloadMore:Function, target?:any) {
+    setPreloadMore(preloadUnit: number, onPreloadMore: Function, target?: any) {
         this._preloadUnit = preloadUnit;
         this._onPreloadMore = onPreloadMore;
         this._target = target;
+    }
+
+    /**
+     * 获取指定索引的内容项目
+     * @param index 索引(0开始)
+     */
+    scrollTo(index: number) {
+        if (index < 0) index = 0;
+        if (index >= this.content.children.length) index = this.content.children.length - 1;
+
+        let pos: cc.Vec2;
+        if (this.direction == cc.Scrollbar.Direction.VERTICAL) {
+            let child = this.content.children[index];
+            let childTop = -child.position.y - child.height * child.anchorY;
+            pos = cc.v2(child.position.x, childTop);
+        }
+        else {
+            let child = this.content.children[index];
+            let childLeft = child.position.x - child.width * child.anchorX;
+            pos = cc.v2(childLeft, child.position.y);
+        }
+
+        this.scrollView.scrollToOffset(pos, .5);
     }
 }
