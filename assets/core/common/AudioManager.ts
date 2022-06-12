@@ -21,7 +21,7 @@ class SoundAudioSource{
 /** 音频管理器 */
 @ccclass
 @executeInEditMode
-@menu('Common/AudioManager')
+@menu('common/AudioManager')
 export default class AudioManager extends cc.Component {
     //#region instance
     private static _instance: AudioManager = null;

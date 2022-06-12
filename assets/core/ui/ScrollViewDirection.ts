@@ -4,7 +4,7 @@ const { ccclass, property, executeInEditMode, menu } = cc._decorator;
 
 @ccclass
 @executeInEditMode
-@menu('UI/ScrollViewDirection')
+@menu('ui/ScrollViewDirection')
 export default class ScrollViewDirection extends cc.Component {
 
     private _type: cc.Scrollbar.Direction = cc.Scrollbar.Direction.VERTICAL;

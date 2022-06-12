@@ -12,7 +12,7 @@ const { ccclass, property, executeInEditMode, menu } = cc._decorator;
  */
 @ccclass
 @executeInEditMode
-@menu('UI/ScrollViewDynamic')
+@menu('ui/ScrollViewDynamic')
 export default class ScrollViewDynamic extends cc.Component {
 
     //#region  组件属性

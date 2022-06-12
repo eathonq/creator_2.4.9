@@ -127,8 +127,8 @@ class ViewStack {
         // 后退当前一个视图
         if (!name) {
             if (this.viewList.length >= 2) {
-                let showView = this.viewList[this.viewList.length - 2];
-                showView.show();
+                let viewData = this.viewList[this.viewList.length - 2];
+                viewData.show();
             }
 
             // 最后一个视图不需要关闭
@@ -142,8 +142,8 @@ class ViewStack {
             let index = this.viewList.findIndex(v => v.viewBase.viewName === name);
             if (index >= 0) {
                 if (index - 1 >= 0) {
-                    let showView = this.viewList[index - 1];
-                    showView.show();
+                    let viewData = this.viewList[index - 1];
+                    viewData.show();
                 }
 
                 // 最后一个视图不需要关闭
@@ -169,8 +169,8 @@ class ViewStack {
             // 最后一个视图不需要关闭
             if (this.viewList.length == 1) return true;
 
-            let showView = this.viewList[index];
-            showView.show(data);
+            let viewData = this.viewList[index];
+            viewData.show(data);
 
             while (this.viewList.length > index + 1) {
                 let closeView = this.viewList.pop();
@@ -202,7 +202,7 @@ class ViewStack {
 /** 视图管理 */
 @ccclass
 @executeInEditMode
-@menu('Common/ViewManager')
+@menu('common/ViewManager')
 export default class ViewManager extends cc.Component {
     //#region instance
     private static _instance: ViewManager = null;

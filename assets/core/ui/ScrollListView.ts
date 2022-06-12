@@ -242,7 +242,7 @@ class ScrollListViewItemManager {
 /** 滚动视图列表管理 */
 @ccclass
 @executeInEditMode
-@menu('UI/ScrollListView')
+@menu('ui/ScrollListView')
 export default class ScrollListView extends cc.Component {
 
     //#region 组件属性

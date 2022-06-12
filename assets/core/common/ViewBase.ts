@@ -41,7 +41,7 @@ export enum ViewState {
 
 @ccclass
 @executeInEditMode
-@menu("Common/ViewBase")
+@menu("common/ViewBase")
 export class ViewBase extends cc.Component {
     @property({
         tooltip: "视图名称",

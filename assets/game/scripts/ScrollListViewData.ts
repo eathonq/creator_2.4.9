@@ -13,125 +13,84 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class ScrollListViewData extends cc.Component {
 
-    //#region Vertical
-    @property(ScrollListView)
-    private listView: ScrollListView = null;
-
     @property(cc.ScrollView)
     private scrollView: cc.ScrollView = null;
 
-    @property([cc.Node])
-    private itemTemplates: cc.Node[] = [];
-    //#endregion    
-
-    //#region Horizontal
     @property(cc.ScrollView)
     private hScrollView: cc.ScrollView = null;
 
-    @property([cc.Node])
-    private hItemTemplates: cc.Node[] = [];
-    //#endregion
-
-    //#region grid
     @property(cc.ScrollView)
     private gScrollView: cc.ScrollView = null;
 
-    @property([cc.Node])
-    private gItemTemplates: cc.Node[] = [];
-    //#endregion
+    @property(cc.Node)
+    private templatesNode: cc.Node = null;
 
-    // LIFE-CYCLE CALLBACKS:
+    @property(cc.EditBox)
+    private gotoEditBox: cc.EditBox = null;
+
+    private templates: cc.Node[] = [];
 
     // onLoad () {}
 
     protected start() {
-        this.initScrollListView();
-        this.initScrollView();
+        this.initTemplate();
 
+        this.initScrollView();
         this.initHScrollView();
         this.initGScrollView();
 
-        this.scrollView.node.active = true;
-        this.hScrollView.node.active = false;
-        this.gScrollView.node.active = false;
+        this.updateType(0);
     }
 
-    private _array: any[] = [];
-    private initScrollListView(){
-        for (let i = 0; i < 500; i++) {
-            this._array.push({
-                type: i % 2 === 0 ? "a" : "b",
-                title: "title " + i,
-                content: "content " + i
-            });
+    private* infiniteLoadMore() {
+        let max = 30;
+        let start = this.scrollView.content.children.length;
+        for (let i = start; i < start + 10 && i < max; i++) {
+            let item = cc.instantiate(this.templates[i % 2]);
+            let title = item.getChildByName("Title").getComponent(cc.Label);
+            let content = item.getChildByName("Content").getComponent(cc.Label);
+            title.string = "title " + i;
+            content.string = "content " + i;
+            this.scrollView.content.addChild(item);
+            yield;
         }
-        this.listView.initWithTemplate(this.onLoadEvent.bind(this), this.onUpdateItem.bind(this));
     }
 
-    private onLoadEvent(type: ScrollListViewEvent, index: number) {
-        switch (type) {
-            case ScrollListViewEvent.MORE:
-                //cc.log("scroll load more");
-                let retArray = [];
-                if (index < 0) index = 0;
-                else index++;
-                for (let i = 0; i < 10; i++) {
-                    retArray.push(this._array[index + i]);
-                }
-                return retArray;
-                break;
-            case ScrollListViewEvent.REFRESH:
-                //cc.log("scroll load refresh");
-                break;
+    private iterator = null;
+    update(dt: number) {
+        // 帧加载方案
+        if (this.iterator) {
+            let iterator = this.iterator;
+            if (iterator.next().done) {
+                this.iterator = null;
+            }
         }
-
-        return null;
     }
 
-    private onUpdateItem(item: cc.Node,
-        data: { type: number | string, title, content },
-        index: number) {
-
-        let title = item.getChildByName("Title").getComponent(cc.Label);
-        let content = item.getChildByName("Content").getComponent(cc.Label);
-        title.string = data.title;
-        content.string = data.content;
-
-        let addButton = item.getChildByName("Add Button").getComponent(cc.Button);
-        addButton.node.on(cc.Node.EventType.TOUCH_END, () => {
-            // _array 数据需要添加一条数据
-            let newData = { type: data.type, title: "title new " + data.type, content: "content new " + data.type };
-            this._array.push(newData);
-            // 刷新列表
-            this.listView.insertItem(index, newData);
-        }, this);
-        let removeButton = item.getChildByName("Remove Button").getComponent(cc.Button);
-        removeButton.node.on(cc.Node.EventType.TOUCH_END, () => {
-            //cc.log("remove button click");
-            // _array 数据需要删除一条数据
-            this._array.splice(index, 1);
-            // 刷新列表
-            this.listView.removeItem(index);
-        }, this);
+    private initTemplate() {
+        this.templates.push(...this.templatesNode.children);
     }
 
     private initScrollView() {
-        let onLoadMore = () => {
-            let max = 500;
-            let start = this.scrollView.content.children.length;
-            for (let i = start; i < start + 10 && i < max; i++) {
-                let item = cc.instantiate(this.itemTemplates[i % 2]);
-                let title = item.getChildByName("Title").getComponent(cc.Label);
-                let content = item.getChildByName("Content").getComponent(cc.Label);
-                title.string = "title " + i;
-                content.string = "content " + i;
-                this.scrollView.content.addChild(item);
-            }
-        };
-        onLoadMore();
+        // let onLoadMore = () => {
+        //     let max = 500;
+        //     let start = this.scrollView.content.children.length;
+        //     for (let i = start; i < start + 10 && i < max; i++) {
+        //         let item = cc.instantiate(this.templates[i % 2]);
+        //         let title = item.getChildByName("Title").getComponent(cc.Label);
+        //         let content = item.getChildByName("Content").getComponent(cc.Label);
+        //         title.string = "title " + i;
+        //         content.string = "content " + i;
+        //         this.scrollView.content.addChild(item);
+        //     }
+        // };
+        // onLoadMore();
+        this.iterator = this.infiniteLoadMore();
 
         let scrollViewDynamic = this.scrollView.node.getComponent(ScrollViewDynamic);
-        scrollViewDynamic.setPreloadMore(50, onLoadMore);
+        scrollViewDynamic.setPreloadMore(50, ()=>{
+            this.iterator = this.infiniteLoadMore();
+        });
         scrollViewDynamic.refresh();
     }
 
@@ -140,7 +99,7 @@ export default class ScrollListViewData extends cc.Component {
             let max = 500;
             let start = this.hScrollView.content.children.length;
             for (let i = start; i < start + 10 && i < max; i++) {
-                let item = cc.instantiate(this.hItemTemplates[i % 2]);
+                let item = cc.instantiate(this.templates[i % 2 + 2]);
                 let title = item.getChildByName("Title").getComponent(cc.Label);
                 let content = item.getChildByName("Content").getComponent(cc.Label);
                 title.string = "title " + i;
@@ -161,7 +120,7 @@ export default class ScrollListViewData extends cc.Component {
             let max = 500;
             let start = this.gScrollView.content.children.length;
             for (let i = start; i < start + count && i < max; i++) {
-                let item = cc.instantiate(this.gItemTemplates[i % 2]);
+                let item = cc.instantiate(this.templates[i % 2 + 4]);
                 let title = item.getChildByName("Title").getComponent(cc.Label);
                 let content = item.getChildByName("Content").getComponent(cc.Label);
                 title.string = "title " + i;
@@ -177,23 +136,61 @@ export default class ScrollListViewData extends cc.Component {
         scrollViewDynamic.refresh();
     }
 
-    onToggleEvent(toggle: cc.Toggle) {
-        switch (toggle.name) {
-            case "1<Toggle>":
+    private _type = -1;
+    private updateType(type: number) {
+        if (this._type === type) {
+            return;
+        }
+
+        this._type = type;
+        switch (type) {
+            case 0:
                 this.scrollView.node.active = true;
                 this.hScrollView.node.active = false;
                 this.gScrollView.node.active = false;
                 break;
-            case "2<Toggle>":
+            case 1:
                 this.hScrollView.node.active = true;
                 this.scrollView.node.active = false;
                 this.gScrollView.node.active = false;
                 break;
-            case "3<Toggle>":
+            case 2:
                 this.gScrollView.node.active = true;
                 this.scrollView.node.active = false;
                 this.hScrollView.node.active = false;
                 break;
         }
-    } 
+    }
+
+    onToggleEvent(toggle: cc.Toggle) {
+        switch (toggle.name) {
+            case "0<Toggle>":
+                this.updateType(0);
+                break;
+            case "1<Toggle>":
+                this.updateType(1);
+                break;
+            case "2<Toggle>":
+                this.updateType(2);
+                break;
+        }
+    }
+
+    onGotoEvent(event: Event, customEventData: string) {
+        let index = parseInt(this.gotoEditBox.string);
+        if (isNaN(index)) {
+            index = 0;
+        }
+        switch (this._type) {
+            case 0:
+                this.scrollView.node.getComponent(ScrollViewDynamic).scrollTo(index);
+                break;
+            case 1:
+                this.hScrollView.node.getComponent(ScrollViewDynamic).scrollTo(index);
+                break;
+            case 2:
+                this.gScrollView.node.getComponent(ScrollViewDynamic).scrollTo(index);
+                break;
+        }
+    }
 }
