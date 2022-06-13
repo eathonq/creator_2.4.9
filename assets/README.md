@@ -15,4 +15,5 @@
             # i18n              # 语言包
             # images            # 图片
             # sounds            # 音效
+            # transitions       # 过渡动画(js版本，部分不兼容)
 
