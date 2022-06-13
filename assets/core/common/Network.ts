@@ -1,6 +1,26 @@
+/**
+ * object 数据转换成 key=value&key2=value2 的字符串
+ * @param obj object 数据
+ * @returns 
+ */
+export let objectToKeyValue = (obj: any) => {
+    let str = "";
+    for (let key in obj) {
+        if (obj[key] != null) {
+            str += key + "=" + obj[key] + "&";
+        }
+    }
+    return str.substring(0, str.length - 1);
+}
+
 class HttpRequestHelper {
-    get(url: string, callback: (response: string) => void, errorCallback?: (readyState: number, status: number) => void) {
-        var xhr = new XMLHttpRequest();
+    /**
+     * get请求
+     * @param url 请求地址 
+     * @param callback 回调函数
+     */
+    get(url: string, callback: (response: string, error?: number) => void) {
+        let xhr = new XMLHttpRequest();
         xhr.open("GET", url, true);
         // xhr.onprogress = function () {
         //     console.log('LOADING', xhr.readyState); // readyState 为 3
@@ -21,22 +41,29 @@ class HttpRequestHelper {
             // 403: "Forbidden"
             // 404: "Not Found"
             // 500: "Internal Server Error"
-            
+
             if (xhr.readyState == 4 && xhr.status == 200) {
                 callback(xhr.responseText);
             }
-            else if(xhr.status != 200) {
-                errorCallback ? errorCallback(xhr.readyState, xhr.status) : null;
+            else if (xhr.status != 200) {
+                callback(xhr.responseText, xhr.status);
             }
         }
         xhr.timeout = 5000;
         xhr.send();
     }
 
-    post(url: string, data: string, callback: (response: string) => void, errorCallback?: (readyState: number, status: number) => void) {
-        var xhr = new XMLHttpRequest();
+    /**
+     * post请求
+     * @param url 请求地址
+     * @param data 请求数据
+     * @param callback 回调函数
+     */
+    post(url: string, data: any, callback: (response: string, error?: number) => void) {
+        let xhr = new XMLHttpRequest();
         xhr.open("POST", url, true);
-        xhr.setRequestHeader("Content-type", "application/json");
+        // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CORS
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         if (cc.sys.isNative) {
             xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
             xhr.setRequestHeader('Access-Control-Allow-Methods', 'GET, POST');
@@ -47,22 +74,77 @@ class HttpRequestHelper {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 callback(xhr.responseText);
             }
-            else {
-                errorCallback ? errorCallback(xhr.readyState, xhr.status) : null;
+            else if (xhr.status != 200) {
+                callback(xhr.responseText, xhr.status);
             }
         }
-        xhr.send(data);
+        xhr.timeout = 5000;
+
+        if (typeof data == "object") {
+            xhr.send(objectToKeyValue(data));
+        }
+        else {
+            xhr.send(data);
+        }
     }
 
+    upload(url: string, file: string, callback: (response: string, error?: number) => void) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        const formData = new FormData();
+        formData.append("file", file);
+        xhr.setRequestHeader("Content-Type", "multipart/form-data");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                callback(xhr.responseText);
+            }
+            else if (xhr.status != 200) {
+                callback(xhr.responseText, xhr.status);
+            }
+        }
+        xhr.timeout = 5000;
+        xhr.send(formData);
+    }
+
+    download(url: string, callback: (response: string, error?: number) => void) {
+        let xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.responseType = "blob";
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                let blob = xhr.response;
+                let reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onload = function (e) {
+                    callback('');
+                }
+            }
+        }
+    }
+    /**
+     * get请求
+     * @param url 请求地址 
+     * @returns
+     */
     async getAsync(url: string) {
-        return new Promise<string>((resolve, reject) => {
-            this.get(url, resolve, reject);
+        return new Promise<{ response: string, error?: number }>((resolve, reject) => {
+            this.get(url, (response: string, error?: number) => {
+                resolve({ response: response, error: error });
+            });
         });
     }
 
-    async postAsync(url: string, data: string) {
-        return new Promise<string>((resolve, reject) => {
-            this.post(url, data, resolve, reject);
+    /**
+     * post请求
+     * @param url 请求地址
+     * @param data 请求数据
+     * @returns 
+     */
+    async postAsync(url: string, data: any) {
+        return new Promise<{ response: string, error?: number }>((resolve, reject) => {
+            this.post(url, data, (response: string, error?: number) => {
+                resolve({ response: response, error: error });
+            });
         });
     }
 }
