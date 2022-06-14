@@ -5,7 +5,7 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-import { http } from "../../core/common/Network";
+import { http, openLocalFile } from "../../core/common/Network";
 import { User } from "../models/data";
 
 const { ccclass, property } = cc._decorator;
@@ -25,11 +25,11 @@ export default class NewClass extends cc.Component {
     @property(cc.EditBox)
     downloadUrl: cc.EditBox = null;
 
-    @property(cc.EditBox)
-    uploadUrl: cc.EditBox = null;
+    @property(cc.Sprite)
+    downloadSprite: cc.Sprite = null;
 
     @property(cc.EditBox)
-    uploadData: cc.EditBox = null;
+    uploadUrl: cc.EditBox = null;
 
     @property(cc.Label)
     logLabel: cc.Label = null;
@@ -38,6 +38,9 @@ export default class NewClass extends cc.Component {
     start() {
         this.getUrl.string = "http://localhost:3001/login/jack/1234";
         this.postUrl.string = "http://localhost:3001/register/postUserInfo";
+
+        this.uploadUrl.string = "http://localhost:3001/upload/file";
+        this.downloadUrl.string = "http://localhost:3001/download/";
     }
     // update (dt) {}
 
@@ -64,10 +67,25 @@ export default class NewClass extends cc.Component {
     }
 
     onDownloadEvent(event: cc.Event, customEventData: string) {
-        
+        // 远程图片下载
+        cc.assetManager.loadRemote(this.downloadUrl.string, (err, texture: cc.Texture2D) => {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                this.downloadSprite.spriteFrame = new cc.SpriteFrame(texture);
+            }
+        });
     }
 
     onUploadEvent(event: cc.Event, customEventData: string) {
-
+        openLocalFile((file: File) => {
+            http.upload(this.uploadUrl.string, file, (response: string) => {
+                let json = JSON.parse(response);
+                let url = "http://localhost:3001/download/";
+                this.downloadUrl.string = url + json.data.file;
+                this.logLabel.string += response + "\n";
+            });
+        });
     }
 }

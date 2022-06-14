@@ -13,6 +13,44 @@ export let objectToKeyValue = (obj: any) => {
     return str.substring(0, str.length - 1);
 }
 
+/**
+ * 打开本地文件
+ * @param callback 回调函数 
+ */
+export let openLocalFile = (callback: (file: File) => void) => {
+    let inputEl: HTMLInputElement = <HTMLInputElement>document.getElementById('file_input');// 类型转行 HTMLInputElement ，方便下面的 inputEl.files 调用
+    if (!inputEl) {
+        // 只创建一次
+        inputEl = document.createElement('input');
+        inputEl.id = 'file_input';
+        inputEl.setAttribute('id', 'file_input');
+        inputEl.setAttribute('type', 'file');
+        inputEl.setAttribute('class', 'fileToUpload');
+        inputEl.style.opacity = '0';// 不可见
+        inputEl.style.position = 'absolute';
+        document.body.appendChild(inputEl);
+    }
+    // 这个和 inputEl.onchange 的效果是一样的，2选1就可以了
+    // inputEl.addEventListener('change', (event) => {
+    //    console.log('xxx onchange1', event, inputEl.value);
+    // });
+    inputEl.onchange = (event) => {
+        // console.log('xxx onchange2', event, inputEl.files);
+        let files = inputEl.files;
+        if (files && files.length > 0) {
+            var file = files[0];
+            if (callback) callback(file);
+        }
+    }
+    inputEl.click();// 模拟点击，触发文件选择弹出框，据说有的浏览器不支持，chrome是没问题的
+}
+
+// 加载远程资源和设备资源
+// https://docs.cocos.com/creator/2.4/manual/zh/scripting/dynamic-load-resources.html#%E5%8A%A0%E8%BD%BD%E8%BF%9C%E7%A8%8B%E8%B5%84%E6%BA%90%E5%92%8C%E8%AE%BE%E5%A4%87%E8%B5%84%E6%BA%90
+
+// 参考
+// https://blog.csdn.net/grimraider/article/details/106378809
+
 class HttpRequestHelper {
     /**
      * get请求
@@ -88,12 +126,15 @@ class HttpRequestHelper {
         }
     }
 
-    upload(url: string, file: string, callback: (response: string, error?: number) => void) {
+    /**
+     * 文件上传
+     * @param url 请求地址 
+     * @param file 文件
+     * @param callback 回调函数
+     */
+    upload(url: string, file: File, callback: (response: string, error?: number) => void) {
         let xhr = new XMLHttpRequest();
         xhr.open("POST", url, true);
-        const formData = new FormData();
-        formData.append("file", file);
-        xhr.setRequestHeader("Content-Type", "multipart/form-data");
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 callback(xhr.responseText);
@@ -102,25 +143,12 @@ class HttpRequestHelper {
                 callback(xhr.responseText, xhr.status);
             }
         }
-        xhr.timeout = 5000;
+
+        let formData: FormData = new FormData();
+        formData.append("file", file);
         xhr.send(formData);
     }
 
-    download(url: string, callback: (response: string, error?: number) => void) {
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", url, true);
-        xhr.responseType = "blob";
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                let blob = xhr.response;
-                let reader = new FileReader();
-                reader.readAsDataURL(blob);
-                reader.onload = function (e) {
-                    callback('');
-                }
-            }
-        }
-    }
     /**
      * get请求
      * @param url 请求地址 
@@ -143,6 +171,20 @@ class HttpRequestHelper {
     async postAsync(url: string, data: any) {
         return new Promise<{ response: string, error?: number }>((resolve, reject) => {
             this.post(url, data, (response: string, error?: number) => {
+                resolve({ response: response, error: error });
+            });
+        });
+    }
+
+    /**
+     * 文件上传
+     * @param url 请求地址
+     * @param file 文件
+     * @returns 
+     */
+    async uploadAsync(url: string, file: File) {
+        return new Promise<{ response: string, error?: number }>((resolve, reject) => {
+            this.upload(url, file, (response: string, error?: number) => {
                 resolve({ response: response, error: error });
             });
         });
