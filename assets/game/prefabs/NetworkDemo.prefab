@@ -3030,7 +3030,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "download line",
+    "_name": "upload line",
     "_objFlags": 0,
     "_parent": {
       "__id__": 7
@@ -3307,7 +3307,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "9fsCbDlapGB7180sM+R2J1",
+    "fileId": "7fRR72PDRHVpq2s8acfH+V",
     "sync": false
   },
   {
@@ -3441,7 +3441,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "f9SdMlYgRER4+NRiKVQq2W",
+    "fileId": "5b7Z/f3nRCPI2HDt0wkLNV",
     "sync": false
   },
   {
@@ -3579,7 +3579,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "f6YefkG25J5qXB+UGYKxrp",
+    "fileId": "76sYh68ABKLa2+n0sQWYHq",
     "sync": false
   },
   {
@@ -3620,7 +3620,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "ebPODYapxF2oAIdeTc91WF",
+    "fileId": "bcph5OzW9MSLXoWim545v1",
     "sync": false
   },
   {
@@ -3841,8 +3841,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "download",
-    "_N$string": "download",
+    "_string": "upload",
+    "_N$string": "upload",
     "_fontSize": 20,
     "_lineHeight": 40,
     "_enableWrapText": false,
@@ -3867,7 +3867,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "b6gFO/vL1GW655ut5WaA/i",
+    "fileId": "69yW2zRO1Iso2HrZ/U5Xzc",
     "sync": false
   },
   {
@@ -3937,7 +3937,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "b8vy3wWw9DLbSkdXnyJEKK",
+    "fileId": "f1vO3LDQxHEZHywoTytFXJ",
     "sync": false
   },
   {
@@ -4033,7 +4033,7 @@
     },
     "component": "",
     "_componentId": "45c57U6nm9BzIJKRuBB1iny",
-    "handler": "onDownloadEvent",
+    "handler": "onUploadEvent",
     "customEventData": ""
   },
   {
@@ -4044,7 +4044,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "67uFRckcpLz4G86fGDGoWt",
+    "fileId": "d95giTEbhP37N6x6gwVqkO",
     "sync": false
   },
   {
@@ -4087,12 +4087,12 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "574SPM5TlNWLvuMg1kP3nV",
+    "fileId": "99YtbISqNElrn1QTGmopOG",
     "sync": false
   },
   {
     "__type__": "cc.Node",
-    "_name": "upload line",
+    "_name": "download line",
     "_objFlags": 0,
     "_parent": {
       "__id__": 7
@@ -4369,7 +4369,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "7fRR72PDRHVpq2s8acfH+V",
+    "fileId": "9fsCbDlapGB7180sM+R2J1",
     "sync": false
   },
   {
@@ -4503,7 +4503,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "5b7Z/f3nRCPI2HDt0wkLNV",
+    "fileId": "f9SdMlYgRER4+NRiKVQq2W",
     "sync": false
   },
   {
@@ -4641,7 +4641,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "76sYh68ABKLa2+n0sQWYHq",
+    "fileId": "f6YefkG25J5qXB+UGYKxrp",
     "sync": false
   },
   {
@@ -4682,7 +4682,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "bcph5OzW9MSLXoWim545v1",
+    "fileId": "ebPODYapxF2oAIdeTc91WF",
     "sync": false
   },
   {
@@ -4903,8 +4903,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "upload",
-    "_N$string": "upload",
+    "_string": "download",
+    "_N$string": "download",
     "_fontSize": 20,
     "_lineHeight": 40,
     "_enableWrapText": false,
@@ -4929,7 +4929,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "69yW2zRO1Iso2HrZ/U5Xzc",
+    "fileId": "b6gFO/vL1GW655ut5WaA/i",
     "sync": false
   },
   {
@@ -4999,7 +4999,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "f1vO3LDQxHEZHywoTytFXJ",
+    "fileId": "b8vy3wWw9DLbSkdXnyJEKK",
     "sync": false
   },
   {
@@ -5095,7 +5095,7 @@
     },
     "component": "",
     "_componentId": "45c57U6nm9BzIJKRuBB1iny",
-    "handler": "onUploadEvent",
+    "handler": "onDownloadEvent",
     "customEventData": ""
   },
   {
@@ -5106,7 +5106,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "d95giTEbhP37N6x6gwVqkO",
+    "fileId": "67uFRckcpLz4G86fGDGoWt",
     "sync": false
   },
   {
@@ -5149,7 +5149,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "99YtbISqNElrn1QTGmopOG",
+    "fileId": "574SPM5TlNWLvuMg1kP3nV",
     "sync": false
   },
   {
@@ -6299,13 +6299,13 @@
       "__id__": 66
     },
     "downloadUrl": {
-      "__id__": 95
+      "__id__": 124
     },
     "downloadSprite": {
       "__id__": 164
     },
     "uploadUrl": {
-      "__id__": 124
+      "__id__": 95
     },
     "logLabel": {
       "__id__": 151

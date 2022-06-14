@@ -11,7 +11,7 @@ import { User } from "../models/data";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class NewClass extends cc.Component {
+export default class NetworkData extends cc.Component {
 
     @property(cc.EditBox)
     getUrl: cc.EditBox = null;
