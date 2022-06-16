@@ -512,7 +512,7 @@
     "node": {
       "__id__": 8
     },
-    "_enabled": false,
+    "_enabled": true,
     "list": [
       {
         "__id__": 12
@@ -671,7 +671,7 @@
     "node": {
       "__id__": 15
     },
-    "_enabled": false,
+    "_enabled": true,
     "list": [
       {
         "__id__": 19
@@ -913,8 +913,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "自定义日期 2022-06-13 10:35:03",
-    "_N$string": "自定义日期 2022-06-13 10:35:03",
+    "_string": "自定义日期 2022-06-15 02:07:26",
+    "_N$string": "自定义日期 2022-06-15 02:07:26",
     "_fontSize": 20,
     "_lineHeight": 20,
     "_enableWrapText": true,
@@ -1037,8 +1037,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "毫秒时间 10:35:03",
-    "_N$string": "毫秒时间 10:35:03",
+    "_string": "毫秒时间 14:07:26",
+    "_N$string": "毫秒时间 14:07:26",
     "_fontSize": 20,
     "_lineHeight": 20,
     "_enableWrapText": true,

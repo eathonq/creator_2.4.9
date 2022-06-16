@@ -157,13 +157,13 @@ class LanguageData {
     unregister(localizedItem: LocalizedLabel | LocalizedSprite) {
         if (localizedItem instanceof LocalizedLabel) {
             let index = this.localizedLabelArray.indexOf(localizedItem);
-            if (index >= 0) {
+            if (index != -1) {
                 this.localizedLabelArray.splice(index, 1);
             }
         }
         else if (localizedItem instanceof LocalizedSprite) {
             let index = this.localizedSpriteArray.indexOf(localizedItem);
-            if (index >= 0) {
+            if (index != -1) {
                 this.localizedSpriteArray.splice(index, 1);
             }
         }
