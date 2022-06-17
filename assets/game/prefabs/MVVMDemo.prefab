@@ -36,11 +36,14 @@
         "__id__": 181
       },
       {
-        "__id__": 182
+        "__id__": 158
+      },
+      {
+        "__id__": 159
       }
     ],
     "_prefab": {
-      "__id__": 183
+      "__id__": 160
     },
     "_opacity": 255,
     "_color": {
@@ -6547,6 +6550,16 @@
     "global": false,
     "globalContext": "MVVMData",
     "_id": ""
+  },
+  {
+    "__type__": "51d3fM/COdPnrQDDF7Hpvld",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "_id": "dbiqtorFZKuKD5W7XRlSSt"
   },
   {
     "__type__": "cc.PrefabInfo",
