@@ -1,10 +1,3 @@
-// Learn TypeScript:
-//  - https://docs.cocos.com/creator/manual/en/scripting/typescript.html
-// Learn Attribute:
-//  - https://docs.cocos.com/creator/manual/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
-
 import { BindingMode, DataContext, contextBind, contextGetValue, contextSetValue, contextUnbind } from "./DataContext";
 
 const { ccclass, property, executeInEditMode, menu } = cc._decorator;
@@ -16,7 +9,6 @@ const COMP_ARRAY_CHECK = [
     ['cc.RichText', 'string'],
     ['cc.EditBox', 'string'],
     ['cc.Toggle', 'isChecked'],
-    ['cc.ToggleContainer', 'isChecked'],
     ['cc.Slider', 'progress'],
     ['cc.ProgressBar', 'progress'],
     ['cc.PageView', 'getCurrentPageIndex()'],
@@ -82,6 +74,8 @@ export default class DataBinding extends cc.Component {
 
         contextBind(this.getPath(), this.onDataChange, this);
 
+        this.setComponentValue(contextGetValue(this.getPath()));
+
         switch (this.bindingModel) {
             case BindingMode.TwoWay:
                 this.toSourceComponent();
@@ -106,11 +100,11 @@ export default class DataBinding extends cc.Component {
     // update (dt) {}
 
     private getPath() {
-        return this.global ? `${this.globalContext}.${this.watchPath}` : `${this.relevancyContext}.${this.watchPath}`;
+        return this.global ? `${this.globalContext}.${this.watchPath}` : `${this._tag}.${this.watchPath}`;
     }
 
     private toSourceComponent() {
-        let path = this.global ? `${this.globalContext}.${this.watchPath}` : `${this.relevancyContext}.${this.watchPath}`;
+        let path = this.global ? `${this.globalContext}.${this.watchPath}` : `${this._tag}.${this.watchPath}`;
         switch (this.componentName) {
             case 'cc.EditBox':
                 let editBox = this.node.getComponent(cc.EditBox);
@@ -121,12 +115,6 @@ export default class DataBinding extends cc.Component {
             case 'cc.Toggle':
                 let toggle = this.node.getComponent(cc.Toggle);
                 toggle.node.on('toggle', (toggle: cc.Toggle) => {
-                    contextSetValue(path, toggle.isChecked);
-                }, this);
-                break;
-            case 'cc.ToggleContainer':
-                let toggleContainer = this.node.getComponent(cc.ToggleContainer);
-                toggleContainer.node.on('toggle', (toggle: cc.Toggle) => {
                     contextSetValue(path, toggle.isChecked);
                 }, this);
                 break;
@@ -159,11 +147,13 @@ export default class DataBinding extends cc.Component {
     }
 
     private _context: DataContext;
+    private _tag = '';
     private checkEditorComponent() {
         let context = this.getContext(this.node);
         if (context) {
             this._context = context;
-            this.relevancyContext = context.globalContext;
+            this.relevancyContext = context.tag;
+            this._tag = context.tag;
         }
 
         let checkArray = COMP_ARRAY_CHECK;
@@ -182,8 +172,6 @@ export default class DataBinding extends cc.Component {
         switch (this.componentName) {
             case 'cc.PageView':
                 return this.node.getComponent(cc.PageView).getCurrentPageIndex();
-            case 'cc.ToggleContainer':
-                return "";
             default:
                 return this.node.getComponent(this.componentName)[this.componentProperty];
         }
@@ -195,11 +183,14 @@ export default class DataBinding extends cc.Component {
             case 'cc.PageView':
                 this.node.getComponent(cc.PageView).setCurrentPageIndex(value);
                 break;
-            case 'cc.ToggleContainer':
-                break;
             default:
                 this.node.getComponent(this.componentName)[this.componentProperty] = value;
                 break;
+        }
+
+        // 如果是一次绑定，则解绑
+        if (this.bindingModel === BindingMode.OneTime) {
+            contextUnbind(this.getPath(), this.onDataChange, this);
         }
     }
 
@@ -207,10 +198,6 @@ export default class DataBinding extends cc.Component {
         let path = pathArray.join('.');
         if (path === this.watchPath) {
             this.setComponentValue(n);
-        }
-
-        if (this.bindingModel === BindingMode.OneTime) {
-            contextUnbind(this.getPath(), this.onDataChange, this);
         }
     }
 }

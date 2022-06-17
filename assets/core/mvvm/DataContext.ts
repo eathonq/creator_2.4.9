@@ -1,7 +1,8 @@
-const MVVM_EMIT_HEAD = 'mvvm_emit:';
-export const MVVM_DEBUG = false;
-export const GLOBAL_MVVM = 'MVVM';
 const { ccclass, property, executeInEditMode, menu } = cc._decorator;
+const MVVM_EMIT_HEAD = 'mvvm_emit:';
+
+export const GLOBAL_MVVM = 'MVVM';
+export const MVVM_DEBUG = false;
 
 /** 绑定模式 */
 export enum BindingMode {
@@ -54,12 +55,12 @@ function getValueFromPath(obj: any, path: string, def?: any, tag: string = ''): 
  * 数据上下文 (如果有重写onLoad，则必须在onLoad中调用super.onLoad)
  */
 @ccclass
-// @menu('mvvm/DataContext')
+@executeInEditMode
 export class DataContext extends cc.Component {
     @property({
         tooltip: '全局启用',
     })
-    global = false;
+    private global = false;
 
     @property({
         tooltip: '全局标识',
@@ -67,7 +68,15 @@ export class DataContext extends cc.Component {
             return this.global;
         }
     })
-    globalContext: string = '';
+    private globalContext: string = '';
+
+    private _tag: string = '';
+    get tag(): string {
+        return this._tag;
+    }
+    private set tag(value: string) {
+        this._tag = value;
+    }
 
     onRestore() {
         this.checkEditorComponent();
@@ -78,15 +87,15 @@ export class DataContext extends cc.Component {
         this.checkEditorComponent();
         if (CC_EDITOR) return;
 
-        this.init();
+        this.initContextCallback();
     }
 
     protected start(): void { }
 
-    private _init = false;
-    private init() {
-        if (this._init) return;
-        this._init = true;
+    private _initContextCallback = false;
+    private initContextCallback() {
+        if (this._initContextCallback) return;
+        this._initContextCallback = true;
         this._contextCallback = this['__context_callback__'];
         if (this._contextCallback) {
             this._contextCallback.target = this;
@@ -94,7 +103,7 @@ export class DataContext extends cc.Component {
         }
 
         if (!this.global) {
-            this.globalContext = this.constructor.name + this.constructor.prototype['__cid__'];
+            this.tag = this.constructor.name + this.constructor.prototype['__cid__'];
         }
 
         mvvm.set(this);
@@ -102,19 +111,20 @@ export class DataContext extends cc.Component {
 
     private checkEditorComponent() {
         this.globalContext = this.constructor.name;
+        this.tag = this.globalContext;
     }
 
     callback(n: any, o: any, path: string[]): void {
-        if (MVVM_DEBUG) cc.log(`${this.globalContext}.${path} >> old:${o} new:${n}`);
-        cc.director.emit(MVVM_EMIT_HEAD + this.globalContext + '.' + path.join('.'), n, o, path);
+        if (MVVM_DEBUG) cc.log(`${this.tag}.${path} >> old:${o} new:${n}`);
+        cc.director.emit(MVVM_EMIT_HEAD + this.tag + '.' + path.join('.'), n, o, path);
     }
 
     setValue(path: string, value: any) {
-        setValueFromPath(this, path, value, this.globalContext);
+        setValueFromPath(this, path, value, this.tag);
     }
 
     getValue(path: string, def?: any): any {
-        return getValueFromPath(this, path, def, this.globalContext);
+        return getValueFromPath(this, path, def, this.tag);
     }
 }
 
@@ -124,12 +134,12 @@ class ContextManager {
     set<T>(data: DataContext) {
         if (!data) return;
 
-        let has = this._array.some(item => item.tag == data.globalContext);
+        let has = this._array.some(item => item.tag == data.tag);
         if (has) {
-            this.remove(data.globalContext);
+            this.remove(data.tag);
         }
 
-        this._array.push({ tag: data.globalContext, context: data });
+        this._array.push({ tag: data.tag, context: data });
     }
 
     get<T>(tag: string): DataContext {

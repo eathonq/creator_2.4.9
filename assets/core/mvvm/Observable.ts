@@ -1,3 +1,5 @@
+export const MVVM_DEBUG = false;
+
 /**
  * 观察者
  */
@@ -27,13 +29,13 @@ function observableValue(contextCallback: { target: any, callback: Function }, t
     // 属性劫持
     Object.defineProperty(target, _property, {
         get: function () {
-            // cc.log(`get ${path.join('.')} => ${_val}`);
+            if (MVVM_DEBUG) cc.log(`get ${path.join('.')} => ${_val}`);
             return _val;
         },
         set: function (val) {
             if (val !== _val) {
                 doCallback(contextCallback, val, _val, path);
-                // cc.log(`set ${path.join('.')} => ${val}`);
+                if (MVVM_DEBUG) cc.log(`set ${path.join('.')} => ${val}`);
                 _val = val;
                 if (Object.prototype.toString.call(val) === '[object Object]') {
                     observableObject(contextCallback, val, path);

@@ -13,14 +13,11 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class MVVMData extends DataContext {
-
-    // LIFE-CYCLE CALLBACKS:
+    @observable
+    private label: string = "123";
 
     @observable
-    private label: string = "";
-
-    @observable
-    private check: boolean = false;
+    private check: boolean;
 
     @observable
     private user: User;
@@ -28,8 +25,7 @@ export default class MVVMData extends DataContext {
     start() {
         this.user = new User;
         this.user.name = "old name";
-        //this.user.isCheck = true;
-        //this.user.toggles[0] = false;
+        this.user.isCheck = true;
 
         this.label = "old name";
         this.check = true;
@@ -46,17 +42,18 @@ export default class MVVMData extends DataContext {
         this.label += "1";
         this.check = !this.check;
 
-        if(this.label.length > 10) {
+        if (this.label.length > 10) {
             this.label = "";
         }
-        if(this.user.name.length > 10) {
+        if (this.user.name.length > 10) {
             this.user.name = "";
         }
-        if(this.user.progress > 1) {
+        if (this.user.progress > 1) {
             this.user.progress = 0;
         }
-        if(this.user.index > 3){
+        if (this.user.index > 2) {
             this.user.index = 0;
         }
     }
+
 }
