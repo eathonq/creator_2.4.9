@@ -19,6 +19,7 @@ export class User {
     isCheck = false;
     progress = 0;
     index = 0;
-    toggles = [true, false, false];
+    checkarray = "";
+    //toggles = [true, false, false];
     
 }

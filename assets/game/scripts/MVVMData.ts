@@ -5,44 +5,58 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-import { context } from "../../core/mvvm/DataContext";
+import { DataContext } from "../../core/mvvm/DataContext";
+import { observable } from "../../core/mvvm/Observable";
 import { User } from "../models/UserModel";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class MVVMData extends cc.Component {
+export default class MVVMData extends DataContext {
 
     // LIFE-CYCLE CALLBACKS:
 
-    protected onLoad() { }
+    @observable
+    private label: string = "";
 
-    @context("USER")
+    @observable
+    private check: boolean = false;
+
+    @observable
     private user: User;
 
     start() {
         this.user = new User;
         this.user.name = "old name";
-        this.user.isCheck = true;
+        //this.user.isCheck = true;
+        //this.user.toggles[0] = false;
 
-        this.user.toggles[0] = false;
+        this.label = "old name";
+        this.check = true;
     }
 
     // update (dt) {}
 
-    private _callback(n: any, o: any, path: string): void {
-        console.log(`${path} -> old: ${o} new: ${n}`);
-    }
-
     onClickEvent(event: cc.Event, customEventData: string) {
-        //this.user.name = "new name";
-        // if(this.label){
-        //     this.label.string = "new name";
-        // }
-
         this.user.isCheck = !this.user.isCheck;
         this.user.name += "1";
         this.user.progress += 0.1;
         this.user.index += 1;
+
+        this.label += "1";
+        this.check = !this.check;
+
+        if(this.label.length > 10) {
+            this.label = "";
+        }
+        if(this.user.name.length > 10) {
+            this.user.name = "";
+        }
+        if(this.user.progress > 1) {
+            this.user.progress = 0;
+        }
+        if(this.user.index > 3){
+            this.user.index = 0;
+        }
     }
 }

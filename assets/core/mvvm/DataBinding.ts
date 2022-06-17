@@ -5,7 +5,7 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-import { BindingMode, contextBind, contextSetValue, contextUnbind } from "./DataContext";
+import { BindingMode, DataContext, contextBind, contextGetValue, contextSetValue, contextUnbind } from "./DataContext";
 
 const { ccclass, property, executeInEditMode, menu } = cc._decorator;
 
@@ -16,9 +16,10 @@ const COMP_ARRAY_CHECK = [
     ['cc.RichText', 'string'],
     ['cc.EditBox', 'string'],
     ['cc.Toggle', 'isChecked'],
+    ['cc.ToggleContainer', 'isChecked'],
     ['cc.Slider', 'progress'],
     ['cc.ProgressBar', 'progress'],
-    ['cc.PageView', 'currentPageIndex'],
+    ['cc.PageView', 'getCurrentPageIndex()'],
 ];
 
 @ccclass
@@ -39,70 +40,132 @@ export default class DataBinding extends cc.Component {
     private componentProperty: string = "";
 
     @property({
-        type: cc.Enum(BindingMode),
-        tooltip: '绑定模式:\n TwoWay: 双向绑定;\n OneWay: 单向绑定;\n OneTime: 一次绑定;\n OneWayToSource: 当目标属性更改时更新源属性。',
+        tooltip: '启用全局数据',
     })
-    private bindingModel: BindingMode = BindingMode.OneWay;
+    private global = false;
 
-    @property
+    @property({
+        tooltip: '全局数据',
+        visible() {
+            return this.global;
+        },
+    })
+    private globalContext = "";
+
+    @property({
+        tooltip: '关联数据',
+        readonly: true,
+        visible() {
+            return !this.global;
+        },
+    })
+    private relevancyContext = "";
+
+    @property({
+        tooltip: '绑定路径',
+    })
     private watchPath: string = "";
 
     onRestore() {
         this.checkEditorComponent();
     }
 
+    @property({
+        type: cc.Enum(BindingMode),
+        tooltip: '绑定模式:\n TwoWay: 双向绑定;\n OneWay: 单向绑定;\n OneTime: 一次绑定;\n OneWayToSource: 当目标属性更改时更新源属性。',
+    })
+    private bindingModel: BindingMode = BindingMode.OneWay;
+
     protected onLoad() {
         if (!this.checkEditorComponent()) return;
         if (CC_EDITOR) return;
 
-        contextBind(this.watchPath, this.onDataChange, this);
-        if (this.bindingModel === BindingMode.OneWayToSource) {
-            contextUnbind(this.watchPath, this.onDataChange, this);
-            this.toSourceComponent();
-        }
-        else if (this.bindingModel === BindingMode.TwoWay) {
-            this.toSourceComponent();
+        contextBind(this.getPath(), this.onDataChange, this);
+
+        switch (this.bindingModel) {
+            case BindingMode.TwoWay:
+                this.toSourceComponent();
+                break;
+            case BindingMode.OneWay:
+                break;
+            case BindingMode.OneTime:
+                break;
+            case BindingMode.OneWayToSource:
+                this.toSourceComponent();
+                contextUnbind(this.getPath(), this.onDataChange, this);
+                break;
         }
     }
 
     protected onDestroy(): void {
-        contextUnbind(this.watchPath, this.onDataChange, this);
+        contextUnbind(this.getPath(), this.onDataChange, this);
     }
 
     protected start() { }
 
     // update (dt) {}
 
+    private getPath() {
+        return this.global ? `${this.globalContext}.${this.watchPath}` : `${this.relevancyContext}.${this.watchPath}`;
+    }
+
     private toSourceComponent() {
+        let path = this.global ? `${this.globalContext}.${this.watchPath}` : `${this.relevancyContext}.${this.watchPath}`;
         switch (this.componentName) {
             case 'cc.EditBox':
                 let editBox = this.node.getComponent(cc.EditBox);
                 editBox.node.on('text-changed', (editBox: cc.EditBox) => {
-                    contextSetValue(this.watchPath, editBox.string);
+                    contextSetValue(path, editBox.string);
                 }, this);
                 break;
             case 'cc.Toggle':
                 let toggle = this.node.getComponent(cc.Toggle);
                 toggle.node.on('toggle', (toggle: cc.Toggle) => {
-                    contextSetValue(this.watchPath, toggle.isChecked);
+                    contextSetValue(path, toggle.isChecked);
+                }, this);
+                break;
+            case 'cc.ToggleContainer':
+                let toggleContainer = this.node.getComponent(cc.ToggleContainer);
+                toggleContainer.node.on('toggle', (toggle: cc.Toggle) => {
+                    contextSetValue(path, toggle.isChecked);
                 }, this);
                 break;
             case 'cc.Slider':
                 let slider = this.node.getComponent(cc.Slider);
                 slider.node.on('slide', (slider: cc.Slider) => {
-                    contextSetValue(this.watchPath, slider.progress);
+                    contextSetValue(path, slider.progress);
                 }, this);
                 break;
             case 'cc.PageView':
                 let pageView = this.node.getComponent(cc.PageView);
                 pageView.node.on('page-turning', (pageView: cc.PageView) => {
-                    contextSetValue(this.watchPath, pageView.getCurrentPageIndex());
+                    contextSetValue(path, pageView.getCurrentPageIndex());
                 }, this);
                 break;
         }
     }
 
+    private getContext(node: cc.Node, maxLevel: number = 10): DataContext {
+        let check = node;
+        while (check && maxLevel > 0) {
+            let context: DataContext = check.getComponent(DataContext);
+            if (context) {
+                return context;
+            }
+            check = check.parent;
+            maxLevel--;
+        }
+        return null;
+    }
+
+    private _context: DataContext;
     private checkEditorComponent() {
+        let context = this.getContext(this.node);
+        if (context) {
+            this._context = context;
+            this.relevancyContext = context.globalContext;
+        }
+
         let checkArray = COMP_ARRAY_CHECK;
         for (const item of checkArray) {
             if (this.node.getComponent(item[0])) {
@@ -119,6 +182,8 @@ export default class DataBinding extends cc.Component {
         switch (this.componentName) {
             case 'cc.PageView':
                 return this.node.getComponent(cc.PageView).getCurrentPageIndex();
+            case 'cc.ToggleContainer':
+                return "";
             default:
                 return this.node.getComponent(this.componentName)[this.componentProperty];
         }
@@ -129,6 +194,8 @@ export default class DataBinding extends cc.Component {
         switch (this.componentName) {
             case 'cc.PageView':
                 this.node.getComponent(cc.PageView).setCurrentPageIndex(value);
+                break;
+            case 'cc.ToggleContainer':
                 break;
             default:
                 this.node.getComponent(this.componentName)[this.componentProperty] = value;
@@ -143,7 +210,7 @@ export default class DataBinding extends cc.Component {
         }
 
         if (this.bindingModel === BindingMode.OneTime) {
-            contextUnbind(this.watchPath, this.onDataChange, this);
+            contextUnbind(this.getPath(), this.onDataChange, this);
         }
     }
 }

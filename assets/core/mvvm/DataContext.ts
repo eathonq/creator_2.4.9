@@ -1,7 +1,7 @@
-import { JsonOb } from "./JsonOb";
-
-const VM_EMIT_HEAD = 'VC:';
-const DEBUG_SHOW_PATH = true;
+const MVVM_EMIT_HEAD = 'mvvm_emit:';
+export const MVVM_DEBUG = false;
+export const GLOBAL_MVVM = 'MVVM';
+const { ccclass, property, executeInEditMode, menu } = cc._decorator;
 
 /** 绑定模式 */
 export enum BindingMode {
@@ -19,8 +19,12 @@ export enum BindingMode {
 function setValueFromPath(obj: any, path: string, value: any, tag: string = '') {
     let props = path.split('.');
     for (let i = 0; i < props.length; i++) {
+        if (!obj) return;
         const propName = props[i];
-        if (propName in obj === false) { console.error('[' + propName + '] not find in ' + tag + '.' + path); break; }
+        if (propName in obj === false) {
+            //console.warn('[' + propName + '] not find in ' + tag + '.' + path); 
+            break;
+        }
         if (i == props.length - 1) {
             obj[propName] = value;
         } else {
@@ -33,98 +37,102 @@ function setValueFromPath(obj: any, path: string, value: any, tag: string = '') 
 function getValueFromPath(obj: any, path: string, def?: any, tag: string = ''): any {
     let props = path.split('.');
     for (let i = 0; i < props.length; i++) {
+        if (!obj) return def;
         const propName = props[i];
-        if ((propName in obj === false)) { console.error('[' + propName + '] not find in ' + tag + '.' + path); return def; }
+        if ((propName in obj === false)) {
+            //console.warn('[' + propName + '] not find in ' + tag + '.' + path); 
+            return def;
+        }
         obj = obj[propName];
     }
-    if (obj === null || typeof obj === "undefined") obj = def;//如果g == null 则返回一个默认值
+    if (obj === null || typeof obj === "undefined") obj = def;
     return obj;
 
 }
 
-/** 数据上下文 */
-class DataContext<T> {
-    /**
-     * 数据上下文
-     * @param data 数据
-     * @param tag 标记
-     */
-    constructor(data: T, tag: string) {
-        new JsonOb(data, this._callback.bind(this));
-        this.$data = data;
-        this._tag = tag;
-    }
+/**
+ * 数据上下文 (如果有重写onLoad，则必须在onLoad中调用super.onLoad)
+ */
+@ccclass
+// @menu('mvvm/DataContext')
+export class DataContext extends cc.Component {
+    @property({
+        tooltip: '全局启用',
+    })
+    global = false;
 
-    public $data: T;
-    private _tag: string;
-    /**激活状态, 将会通过 cc.director.emit 发送值变动的信号, 适合需要屏蔽的情况 */
-    public active: boolean = true;
-    /**是否激活根路径回调通知, 不激活的情况下 只能监听末端路径值来判断是否变化 */
-    public emitToRootPath: boolean = false;
-
-    private _callback(n: any, o: any, path: string[]): void {
-        if (this.active == true) {
-            let name = VM_EMIT_HEAD + this._tag + '.' + path.join('.')
-            if (DEBUG_SHOW_PATH) cc.log(`${this._tag}.${path} >> old:${o} new:${n}`);
-
-            cc.director.emit(name, n, o, [this._tag].concat(path)); //通知末端路径
-
-            if (this.emitToRootPath) cc.director.emit(VM_EMIT_HEAD + this._tag, n, o, path);//通知主路径
-
-            if (path.length >= 2) {
-                for (let i = 0; i < path.length - 1; i++) {
-                    const e = path[i];
-                    //cc.log('中端路径');
-                }
-            }
-
+    @property({
+        tooltip: '全局标识',
+        visible() {
+            return this.global;
         }
+    })
+    globalContext: string = '';
+
+    onRestore() {
+        this.checkEditorComponent();
     }
 
-    /**
-     * 通过路径设置数据的方法
-     * @param path 数据路径
-     * @param value 数据值
-     */
-    public setValue(path: string, value: any) {
-        setValueFromPath(this.$data, path, value, this._tag);
+    private _contextCallback: { target: any, callback: Function };
+    protected onLoad() {
+        this.checkEditorComponent();
+        if (CC_EDITOR) return;
+
+        this.init();
     }
-    /**
-     * 获取路径的值
-     * @param path 数据路径
-     * @param def 默认值
-     * @returns 值
-     */
-    public getValue(path: string, def?: any): any {
-        return getValueFromPath(this.$data, path, def, this._tag);
+
+    protected start(): void { }
+
+    private _init = false;
+    private init() {
+        if (this._init) return;
+        this._init = true;
+        this._contextCallback = this['__context_callback__'];
+        if (this._contextCallback) {
+            this._contextCallback.target = this;
+            this._contextCallback.callback = this.callback;
+        }
+
+        if (!this.global) {
+            this.globalContext = this.constructor.name + this.constructor.prototype['__cid__'];
+        }
+
+        mvvm.set(this);
+    }
+
+    private checkEditorComponent() {
+        this.globalContext = this.constructor.name;
+    }
+
+    callback(n: any, o: any, path: string[]): void {
+        if (MVVM_DEBUG) cc.log(`${this.globalContext}.${path} >> old:${o} new:${n}`);
+        cc.director.emit(MVVM_EMIT_HEAD + this.globalContext + '.' + path.join('.'), n, o, path);
+    }
+
+    setValue(path: string, value: any) {
+        setValueFromPath(this, path, value, this.globalContext);
+    }
+
+    getValue(path: string, def?: any): any {
+        return getValueFromPath(this, path, def, this.globalContext);
     }
 }
 
-/** 数据上下文管理 */
-class DataContextManager {
-    /**
-     * 添加数据上下文
-     */
-    constructor() {
-        this._array = [];
-    }
-
-    private _array: Array<{ tag: string, context: DataContext<any> }>;
-    private _head: string;
-
-    set<T>(data: T, tag: string = 'global') {
+class ContextManager {
+    //#region array
+    private _array: Array<{ tag: string, context: DataContext }> = [];
+    set<T>(data: DataContext) {
         if (!data) return;
 
-        let has = this._array.some(item => item.tag == tag);
+        let has = this._array.some(item => item.tag == data.globalContext);
         if (has) {
-            this.remove(tag);
+            this.remove(data.globalContext);
         }
 
-        let context = new DataContext<T>(data, tag);
-        this._array.push({ tag, context });
+        this._array.push({ tag: data.globalContext, context: data });
     }
 
-    get<T>(tag: string): DataContext<T> {
+    get<T>(tag: string): DataContext {
         let context = this._array.find(item => item.tag == tag);
         if (context) {
             return context.context;
@@ -142,7 +150,9 @@ class DataContextManager {
     clear() {
         this._array.length = 0;
     }
+    //#endregion
 
+    //#region value
     setValue(path: string, value: any) {
         path = path.trim();
         let rs = path.split('.');
@@ -160,7 +170,7 @@ class DataContextManager {
         }
     }
 
-    getValue(path: string, def?: any): any {
+    getValue(path: string, def?: any) {
         path = path.trim();
         let rs = path.split('.');
         if (rs.length < 2) {
@@ -194,7 +204,9 @@ class DataContextManager {
             context.setValue(path, context.getValue(path) + value);
         }
     }
+    //#endregion
 
+    //#region bind
     /**
      * 绑定数据
      * @param path 数据路径
@@ -204,7 +216,7 @@ class DataContextManager {
      * @returns 
      */
     bind(path: string, callback: (n: any, o: any, pathArray: string[]) => void, target?: any, useCapture?: boolean): void {
-        path = path.trim(); //防止空格,自动剔除
+        path = path.trim();
         if (path == '') {
             console.error(target.node.name, '节点绑定的路径为空');
             return;
@@ -213,8 +225,7 @@ class DataContextManager {
             console.error(path, '路径不合法,可能错误覆盖了其他路径');
             return;
         }
-
-        cc.director.on(VM_EMIT_HEAD + path, callback, target, useCapture);
+        cc.director.on(MVVM_EMIT_HEAD + path, callback, target, useCapture);
     }
 
     /**
@@ -225,45 +236,17 @@ class DataContextManager {
      * @returns 
      */
     unbind(path: string, callback: (n: any, o: any, pathArray: string[]) => void, target?: any): void {
-        path = path.trim();//防止空格,自动剔除
+        path = path.trim();
         if (path.split('.')[0] === '*') {
             console.error(path, '路径不合法,可能错误覆盖了其他路径');
             return;
         }
-        cc.director.off(VM_EMIT_HEAD + path, callback, target);
+        cc.director.off(MVVM_EMIT_HEAD + path, callback, target);
     }
+    //#endregion
 }
 
-let DM = new DataContextManager();
-
-/** 数据上上下文属性装饰器 */
-export function context(tag?: string) {
-    return function context(target: any, propertyName: string) {
-        let _val = target[propertyName];
-
-        // 属性读取访问器
-        const getter = () => {
-            return _val;
-        };
-
-        // 属性写入访问器
-        const setter = (newVal: any) => {
-            _val = newVal;
-            DM.set(newVal, tag);
-        };
-
-        // 删除属性
-        if (delete this[propertyName]) {
-            // 创建新属性及其读取访问器、写入访问器
-            Object.defineProperty(target, propertyName, {
-                get: getter,
-                set: setter,
-                enumerable: true,
-                configurable: true
-            });
-        }
-    }
-}
+let mvvm = new ContextManager();
 
 /**
  * 绑定数据
@@ -274,7 +257,7 @@ export function context(tag?: string) {
  * @returns 
  */
 export function contextBind(path: string, callback: (n: any, o: any, pathArray: string[]) => void, target?: any, useCapture?: boolean): void {
-    DM.bind(path, callback, target, useCapture);
+    mvvm.bind(path, callback, target, useCapture);
 }
 
 /**
@@ -285,7 +268,7 @@ export function contextBind(path: string, callback: (n: any, o: any, pathArray: 
  * @returns 
  */
 export function contextUnbind(path: string, callback: (n: any, o: any, pathArray: string[]) => void, target?: any): void {
-    DM.unbind(path, callback, target);
+    mvvm.unbind(path, callback, target);
 }
 
 /**
@@ -294,5 +277,15 @@ export function contextUnbind(path: string, callback: (n: any, o: any, pathArray
  * @param value 数据值
  */
 export function contextSetValue(path: string, value: any) {
-    DM.setValue(path, value);
+    mvvm.setValue(path, value);
+}
+
+/**
+ * 获取数据
+ * @param path 数据路径 
+ * @param def 默认值
+ * @returns 
+ */
+export function contextGetValue(path: string, def?: any) {
+    return mvvm.getValue(path, def);
 }
