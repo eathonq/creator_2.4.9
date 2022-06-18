@@ -1,4 +1,4 @@
-import { BindingMode, DataContext, contextBind, contextGetValue, contextSetValue, contextUnbind } from "./DataContext";
+import DataContext from "./DataContext";
 
 const { ccclass, property, executeInEditMode, menu } = cc._decorator;
 
@@ -14,10 +14,23 @@ const COMP_ARRAY_CHECK = [
     ['cc.PageView', 'getCurrentPageIndex()'],
 ];
 
+/** 绑定模式 */
+enum BindingMode {
+    /** 双向绑定，导致对源属性或目标属性的更改自动更新另一个。 */
+    TwoWay = 0,
+    /** 单向绑定，当绑定源改变时更新绑定目标属性。 */
+    OneWay = 1,
+    /** 一次绑定，在应用程序启动或数据上下文更改时更新绑定目标。 */
+    OneTime = 2,
+    /** 当目标属性更改时更新源属性。 */
+    OneWayToSource = 3,
+}
+
+/** UI 数据绑定组件 */
 @ccclass
 @executeInEditMode
-@menu('mvvm/DataBinding')
-export default class DataBinding extends cc.Component {
+@menu('mvvm/Binding')
+export default class Binding extends cc.Component {
 
     @property({
         tooltip: '绑定组件的名字',
@@ -31,34 +44,39 @@ export default class DataBinding extends cc.Component {
     })
     private componentProperty: string = "";
 
+    @property
+    private _global = false;
     @property({
-        tooltip: '启用全局数据',
+        tooltip: '使用全局上下文',
     })
-    private global = false;
+    get global() {
+        return this._global;
+    }
+    private set global(value: boolean) {
+        this._global = value;
+        this.checkEditorComponent();
+    }
 
     @property({
-        tooltip: '全局数据',
-        visible() {
-            return this.global;
-        },
-    })
-    private globalContext = "";
-
-    @property({
-        tooltip: '关联数据',
+        tooltip: '关联上下文',
         readonly: true,
         visible() {
             return !this.global;
         },
+        displayName: 'Data Context',
     })
     private relevancyContext = "";
 
+    @property
+    private _binding = "";
     @property({
         tooltip: '绑定路径',
     })
-    private watchPath: string = "";
-
-    onRestore() {
+    get binding() {
+        return this._binding;
+    }
+    set binding(value: string) {
+        this._binding = value;
         this.checkEditorComponent();
     }
 
@@ -66,17 +84,21 @@ export default class DataBinding extends cc.Component {
         type: cc.Enum(BindingMode),
         tooltip: '绑定模式:\n TwoWay: 双向绑定;\n OneWay: 单向绑定;\n OneTime: 一次绑定;\n OneWayToSource: 当目标属性更改时更新源属性。',
     })
-    private bindingModel: BindingMode = BindingMode.OneWay;
+    private model: BindingMode = BindingMode.OneWay;
+
+    onRestore() {
+        this.checkEditorComponent();
+    }
 
     protected onLoad() {
         if (!this.checkEditorComponent()) return;
         if (CC_EDITOR) return;
 
-        contextBind(this.getPath(), this.onDataChange, this);
+        DataContext.bind(this._path, this.onDataChange, this);
 
-        this.setComponentValue(contextGetValue(this.getPath()));
+        this.setComponentValue(DataContext.getValue(this._path));
 
-        switch (this.bindingModel) {
+        switch (this.model) {
             case BindingMode.TwoWay:
                 this.toSourceComponent();
                 break;
@@ -86,54 +108,49 @@ export default class DataBinding extends cc.Component {
                 break;
             case BindingMode.OneWayToSource:
                 this.toSourceComponent();
-                contextUnbind(this.getPath(), this.onDataChange, this);
+                DataContext.unbind(this._path, this.onDataChange, this);
                 break;
         }
     }
 
     protected onDestroy(): void {
-        contextUnbind(this.getPath(), this.onDataChange, this);
+        DataContext.unbind(this._path, this.onDataChange, this);
     }
 
     protected start() { }
 
     // update (dt) {}
 
-    private getPath() {
-        return this.global ? `${this.globalContext}.${this.watchPath}` : `${this._tag}.${this.watchPath}`;
-    }
-
     private toSourceComponent() {
-        let path = this.global ? `${this.globalContext}.${this.watchPath}` : `${this._tag}.${this.watchPath}`;
         switch (this.componentName) {
             case 'cc.EditBox':
                 let editBox = this.node.getComponent(cc.EditBox);
                 editBox.node.on('text-changed', (editBox: cc.EditBox) => {
-                    contextSetValue(path, editBox.string);
+                    DataContext.setValue(this._path, editBox.string);
                 }, this);
                 break;
             case 'cc.Toggle':
                 let toggle = this.node.getComponent(cc.Toggle);
                 toggle.node.on('toggle', (toggle: cc.Toggle) => {
-                    contextSetValue(path, toggle.isChecked);
+                    DataContext.setValue(this._path, toggle.isChecked);
                 }, this);
                 break;
             case 'cc.Slider':
                 let slider = this.node.getComponent(cc.Slider);
                 slider.node.on('slide', (slider: cc.Slider) => {
-                    contextSetValue(path, slider.progress);
+                    DataContext.setValue(this._path, slider.progress);
                 }, this);
                 break;
             case 'cc.PageView':
                 let pageView = this.node.getComponent(cc.PageView);
                 pageView.node.on('page-turning', (pageView: cc.PageView) => {
-                    contextSetValue(path, pageView.getCurrentPageIndex());
+                    DataContext.setValue(this._path, pageView.getCurrentPageIndex());
                 }, this);
                 break;
         }
     }
 
-    private getContext(node: cc.Node, maxLevel: number = 10): DataContext {
+    private findDataContext(node: cc.Node, maxLevel: number = 9): DataContext {
         let check = node;
         while (check && maxLevel > 0) {
             let context: DataContext = check.getComponent(DataContext);
@@ -146,15 +163,23 @@ export default class DataBinding extends cc.Component {
         return null;
     }
 
-    private _context: DataContext;
-    private _tag = '';
+    /** 绑定路径 */
+    private _path = '';
+    /** 绑定属性 */
+    private _property = '';
     private checkEditorComponent() {
-        let context = this.getContext(this.node);
-        if (context) {
-            this._context = context;
-            this.relevancyContext = context.tag;
-            this._tag = context.tag;
+        if (this.global) {
+            this._path = this._binding;
         }
+        else {
+            let context = this.findDataContext(this.node);
+            if (!context) {
+                return false;
+            }
+            this.relevancyContext = context.tag;
+            this._path = this._binding.length > 0 ? `${this.relevancyContext}.${this._binding}` : this.relevancyContext;
+        }
+        this._property = this._path.split('.').slice(1).join('.');
 
         let checkArray = COMP_ARRAY_CHECK;
         for (const item of checkArray) {
@@ -189,15 +214,15 @@ export default class DataBinding extends cc.Component {
         }
 
         // 如果是一次绑定，则解绑
-        if (this.bindingModel === BindingMode.OneTime) {
-            contextUnbind(this.getPath(), this.onDataChange, this);
+        if (this.model === BindingMode.OneTime) {
+            DataContext.unbind(this._path, this.onDataChange, this);
         }
     }
 
-    private onDataChange(n: any, o: any, pathArray: string[]) {
+    private onDataChange(newVal: any, oldVal: any, pathArray: string[]) {
         let path = pathArray.join('.');
-        if (path === this.watchPath) {
-            this.setComponentValue(n);
+        if (path === this._property) {
+            this.setComponentValue(newVal);
         }
     }
 }
