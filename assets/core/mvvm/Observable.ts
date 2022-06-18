@@ -1,44 +1,49 @@
 export const MVVM_DEBUG = false;
 
+type ValueCallback = {
+    target: any,
+    callback: (newVal: any, oldVal: any, pathArray: string[]) => void
+};
+
 /**
- * 观察者
+ * 通知属性装饰器
  */
 export function observable(target: any, propertyName: string) {
-    let contextCallback: { target: any, callback: Function } = target['__context_callback__'];
-    if (!contextCallback) {
-        contextCallback = target['__context_callback__'] = { target: null, callback: null };
+    let handle: ValueCallback = target['__context_callback__'];
+    if (!handle) {
+        handle = target['__context_callback__'] = { target: null, callback: null };
     }
-    observableValue(contextCallback, target, [propertyName]);
+    observableValue(handle, target, [propertyName]);
 }
 
-function doCallback(handle: { target: any, callback: Function }, n: any, o: any, path: string[]) {
+function doCallback(handle: ValueCallback, newVal: any, oldVal: any, pathArray: string[]) {
     if (handle.callback) {
         if (handle.target) {
-            handle.callback.call(handle.target, n, o, path);
+            handle.callback.call(handle.target, newVal, oldVal, pathArray);
         }
         else {
-            handle.callback(n, o, path);
+            handle.callback(newVal, oldVal, pathArray);
         }
     }
 }
 
-function observableValue(contextCallback: { target: any, callback: Function }, target: any, path: string[]) {
-    let _property = path[path.length - 1];
-    let _val = target[_property];
+function observableValue(handle: ValueCallback, target: any, pathArray: string[]) {
+    let property = pathArray[pathArray.length - 1];
+    let oldVal = target[property];
 
     // 属性劫持
-    Object.defineProperty(target, _property, {
+    Object.defineProperty(target, property, {
         get: function () {
-            if (MVVM_DEBUG) cc.log(`get ${path.join('.')} => ${_val}`);
-            return _val;
+            if (MVVM_DEBUG) cc.log(`get ${pathArray.join('.')} => ${oldVal}`);
+            return oldVal;
         },
         set: function (val) {
-            if (val !== _val) {
-                doCallback(contextCallback, val, _val, path);
-                if (MVVM_DEBUG) cc.log(`set ${path.join('.')} => ${val}`);
-                _val = val;
+            if (val !== oldVal) {
+                doCallback(handle, val, oldVal, pathArray);
+                if (MVVM_DEBUG) cc.log(`set ${pathArray.join('.')} => ${val}`);
+                oldVal = val;
                 if (Object.prototype.toString.call(val) === '[object Object]') {
-                    observableObject(contextCallback, val, path);
+                    observableObject(handle, val, pathArray);
                 }
             }
         },
@@ -47,26 +52,26 @@ function observableValue(contextCallback: { target: any, callback: Function }, t
     });
 
     // 子属性劫持
-    switch (Object.prototype.toString.call(_val)) {
+    switch (Object.prototype.toString.call(oldVal)) {
         case '[object Object]':
-            observableObject(contextCallback, _val, path);
+            observableObject(handle, oldVal, pathArray);
             break;
         case '[object Array]':
-            observableCollection(contextCallback, _val, path);
+            observableCollection(handle, oldVal, pathArray);
             break;
     }
 }
 
-function observableObject(contextCallback: { target: any, callback: Function }, target: any, path: string[]) {
+function observableObject(handle: ValueCallback, target: any, pathArray: string[]) {
     Object.keys(target).forEach(key => {
-        let pathArray = path.slice();
-        pathArray.push(key);
-        observableValue(contextCallback, target, pathArray);
+        let newPathArray = pathArray.slice();
+        newPathArray.push(key);
+        observableValue(handle, target, newPathArray);
     });
 }
 
 const OAM = ['push', 'pop', 'shift', 'unshift', 'sort', 'reverse', 'splice'];
-function observableCollection(contextCallback: { target: any, callback: Function }, target: any, path: string[]) {
+function observableCollection(handle: ValueCallback, target: any, pathArray: string[]) {
     // 保存原始 Array 原型  
     let originalProto = Array.prototype;
     // 通过 Object.create 方法创建一个对象，该对象的原型是Array.prototype  
@@ -81,8 +86,8 @@ function observableCollection(contextCallback: { target: any, callback: Function
                 //调用原始原型上的方法  
                 result = originalProto[method].apply(this, arguments);
                 //继续监听新数组  
-                observableValue(contextCallback, this, path);
-                doCallback(contextCallback, this, oldVal, path);
+                observableValue(handle, this, pathArray);
+                doCallback(handle, this, oldVal, pathArray);
                 return result;
             }
         })

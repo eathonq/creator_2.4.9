@@ -13,6 +13,7 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class MVVMData extends DataContext {
+
     @observable
     private label: string = "123";
 

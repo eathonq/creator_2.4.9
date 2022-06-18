@@ -23,7 +23,7 @@ function setValueFromPath(obj: any, path: string, value: any, tag: string = '') 
         if (!obj) return;
         const propName = props[i];
         if (propName in obj === false) {
-            //console.warn('[' + propName + '] not find in ' + tag + '.' + path); 
+            if (MVVM_DEBUG) console.warn('[' + propName + '] not find in ' + tag + '.' + path);
             break;
         }
         if (i == props.length - 1) {
@@ -41,7 +41,7 @@ function getValueFromPath(obj: any, path: string, def?: any, tag: string = ''): 
         if (!obj) return def;
         const propName = props[i];
         if ((propName in obj === false)) {
-            //console.warn('[' + propName + '] not find in ' + tag + '.' + path); 
+            if (MVVM_DEBUG) console.warn('[' + propName + '] not find in ' + tag + '.' + path);
             return def;
         }
         obj = obj[propName];
@@ -50,6 +50,11 @@ function getValueFromPath(obj: any, path: string, def?: any, tag: string = ''): 
     return obj;
 
 }
+
+type ValueCallback = {
+    target: any,
+    callback: (newVal: any, oldVal: any, pathArray: string[]) => void
+};
 
 /**
  * 数据上下文 (如果有重写onLoad，则必须在onLoad中调用super.onLoad)
@@ -82,25 +87,28 @@ export class DataContext extends cc.Component {
         this.checkEditorComponent();
     }
 
-    private _contextCallback: { target: any, callback: Function };
     protected onLoad() {
         this.checkEditorComponent();
         if (CC_EDITOR) return;
 
-        this.initContextCallback();
+        this.init();
     }
 
     protected start(): void { }
 
-    private _initContextCallback = false;
-    private initContextCallback() {
-        if (this._initContextCallback) return;
-        this._initContextCallback = true;
-        this._contextCallback = this['__context_callback__'];
-        if (this._contextCallback) {
-            this._contextCallback.target = this;
-            this._contextCallback.callback = this.callback;
+    private _isInit = false;
+    private _handle: ValueCallback;
+    private init() {
+        if (this._isInit) return;
+        this._isInit = true;
+
+        this._handle = this['__context_callback__'];
+        if (!this._handle) {
+            this._handle = this['__context_callback__'] = { target: null, callback: null };
         }
+
+        this._handle.target = this;
+        this._handle.callback = this.callback;
 
         if (!this.global) {
             this.tag = this.constructor.name + this.constructor.prototype['__cid__'];
@@ -114,9 +122,9 @@ export class DataContext extends cc.Component {
         this.tag = this.globalContext;
     }
 
-    callback(n: any, o: any, path: string[]): void {
-        if (MVVM_DEBUG) cc.log(`${this.tag}.${path} >> old:${o} new:${n}`);
-        cc.director.emit(MVVM_EMIT_HEAD + this.tag + '.' + path.join('.'), n, o, path);
+    callback(newVal: any, oldVal: any, pathArray: string[]): void {
+        if (MVVM_DEBUG) cc.log(`${this.tag}.${pathArray} >> old:${oldVal} new:${newVal}`);
+        cc.director.emit(MVVM_EMIT_HEAD + this.tag + '.' + pathArray.join('.'), newVal, oldVal, pathArray);
     }
 
     setValue(path: string, value: any) {
@@ -128,24 +136,24 @@ export class DataContext extends cc.Component {
     }
 }
 
-class ContextManager {
+class DataContextManager {
     //#region array
     private _array: Array<{ tag: string, context: DataContext }> = [];
-    set<T>(data: DataContext) {
-        if (!data) return;
+    set<T>(context: DataContext) {
+        if (!context) return;
 
-        let has = this._array.some(item => item.tag == data.tag);
+        let has = this._array.some(item => item.tag == context.tag);
         if (has) {
-            this.remove(data.tag);
+            this.remove(context.tag);
         }
 
-        this._array.push({ tag: data.tag, context: data });
+        this._array.push({ tag: context.tag, context: context });
     }
 
     get<T>(tag: string): DataContext {
-        let context = this._array.find(item => item.tag == tag);
-        if (context) {
-            return context.context;
+        let item = this._array.find(item => item.tag == tag);
+        if (item) {
+            return item.context;
         }
         return null;
     }
@@ -225,7 +233,7 @@ class ContextManager {
      * @param useCapture 是否捕获
      * @returns 
      */
-    bind(path: string, callback: (n: any, o: any, pathArray: string[]) => void, target?: any, useCapture?: boolean): void {
+    bind(path: string, callback: (newVal: any, oldVal: any, pathArray: string[]) => void, target?: any, useCapture?: boolean): void {
         path = path.trim();
         if (path == '') {
             console.error(target.node.name, '节点绑定的路径为空');
@@ -245,7 +253,7 @@ class ContextManager {
      * @param target 回调函数的对象
      * @returns 
      */
-    unbind(path: string, callback: (n: any, o: any, pathArray: string[]) => void, target?: any): void {
+    unbind(path: string, callback: (newVal: any, oldVal: any, pathArray: string[]) => void, target?: any): void {
         path = path.trim();
         if (path.split('.')[0] === '*') {
             console.error(path, '路径不合法,可能错误覆盖了其他路径');
@@ -256,7 +264,7 @@ class ContextManager {
     //#endregion
 }
 
-let mvvm = new ContextManager();
+let mvvm = new DataContextManager();
 
 /**
  * 绑定数据
@@ -266,7 +274,7 @@ let mvvm = new ContextManager();
  * @param useCapture 是否捕获
  * @returns 
  */
-export function contextBind(path: string, callback: (n: any, o: any, pathArray: string[]) => void, target?: any, useCapture?: boolean): void {
+export function contextBind(path: string, callback: (newVal: any, oldVal: any, pathArray: string[]) => void, target?: any, useCapture?: boolean): void {
     mvvm.bind(path, callback, target, useCapture);
 }
 
@@ -277,7 +285,7 @@ export function contextBind(path: string, callback: (n: any, o: any, pathArray: 
  * @param target 回调函数的对象
  * @returns 
  */
-export function contextUnbind(path: string, callback: (n: any, o: any, pathArray: string[]) => void, target?: any): void {
+export function contextUnbind(path: string, callback: (newVal: any, oldVal: any, pathArray: string[]) => void, target?: any): void {
     mvvm.unbind(path, callback, target);
 }
 
