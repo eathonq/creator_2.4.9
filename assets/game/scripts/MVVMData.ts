@@ -14,17 +14,20 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class MVVMData extends ViewModelBase {
 
-    @observable
-    private label: string;
+    //@observable
+    private label: string = "123";
 
-    @observable
+    //@observable
     private check: boolean;
 
-    @observable
+    //@observable
     private user: User;
 
     @observable
     private users: User[];
+
+    @observable
+    private intArray: number[];
 
     start() {
         this.label = "old name";
@@ -47,7 +50,9 @@ export default class MVVMData extends ViewModelBase {
         user_4.name = "user_4";
         let user_5 = new User;
         user_5.name = "user_5";
-        this.users = [user_0, user_1, user_2, user_3, user_4, user_5, user_0, user_1, user_2, user_3, user_4, user_5];
+        this.users = [user_0, user_1, user_2, user_3, user_4, user_5];
+
+        this.intArray = [1, 2, 3];
     }
 
     // update (dt) {}
@@ -57,22 +62,37 @@ export default class MVVMData extends ViewModelBase {
         this.user.name += "1";
         this.user.progress += 0.1;
         this.user.index += 1;
-        //this.user.array[0] += 1;
-
+        
         this.label += "1";
         this.check = !this.check;
 
+        this.users[0].name += "1";
+        this.intArray[0] += 1;
+
+        let newUser = new User;
+        newUser.name = "newUser" + this.users.length;
+        this.users.push(newUser);
+        this.intArray.push(this.intArray.length);
+
         if (this.label.length > 10) {
-            this.label = "";
+            this.label = "1";
         }
         if (this.user.name.length > 10) {
-            this.user.name = "";
+            this.user.name = "1";
         }
         if (this.user.progress > 1) {
             this.user.progress = 0;
         }
         if (this.user.index > 2) {
             this.user.index = 0;
+        }
+
+        if(this.users[0].name.length > 10) {
+            this.users[0].name = "1";
+        }
+
+        if(this.intArray[0] > 10) {
+            this.intArray[0] = 0;
         }
     }
 

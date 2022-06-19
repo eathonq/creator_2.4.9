@@ -3,6 +3,16 @@ import ItemsSource from "./ItemsSource";
 
 const { ccclass, property, executeInEditMode, menu } = cc._decorator;
 
+let getNodePath = (node: cc.Node) => {
+    let nodePath = [];
+    let check = node;
+    while (check) {
+        nodePath.splice(0, 0, check.name);
+        check = check.parent;
+    }
+    return nodePath.join('/');
+}
+
 /** UI 数据集合模板绑定组件 */
 @ccclass
 @executeInEditMode
@@ -46,7 +56,8 @@ export default class ItemTemplate extends DataContext {
     // update (dt) {}
 
     private findDataContext(node: cc.Node, maxLevel: number = 9): ItemsSource {
-        let check = node;
+        // 从父节点开始查找
+        let check = node.parent;
         while (check && maxLevel > 0) {
             let context: ItemsSource = check.getComponent(ItemsSource);
             if (context) {
@@ -55,6 +66,8 @@ export default class ItemTemplate extends DataContext {
             check = check.parent;
             maxLevel--;
         }
+
+        console.error(`path:${getNodePath(node)} `,`组件 ItemTemplate `, '找不到 ItemsSource');
         return null;
     }
 
@@ -63,7 +76,7 @@ export default class ItemTemplate extends DataContext {
     /** 绑定属性 */
     private _property = '';
     private checkEditorComponent() {
-        let context = this.findDataContext(this.node.parent);
+        let context = this.findDataContext(this.node);
         if (!context) {
             return false;
         }
@@ -86,5 +99,9 @@ export default class ItemTemplate extends DataContext {
      */
     setIndex(index: number) {
         this._index = `${index}`;
+        this.binding = this._index;
+        this._path = `${this.relevancyContext}.${this.binding}`;
+        this._property = this._path.split('.').slice(1).join('.');
+        this.tag = this._path;
     }
 }

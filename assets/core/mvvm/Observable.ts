@@ -7,6 +7,16 @@ type ValueCallback = {
     callback: (newVal: any, oldVal: any, pathArray: string[]) => void
 };
 
+let getNodePath = (node: cc.Node) => {
+    let nodePath = [];
+    let check = node;
+    while (check) {
+        nodePath.splice(0, 0, check.name);
+        check = check.parent;
+    }
+    return nodePath.join('/');
+}
+
 /**
  * 通知属性装饰器   
  * @note 如果绑定的属性带初始化，需要手动去获取初始值
@@ -53,8 +63,17 @@ function observableValue(handle: ValueCallback, target: any, pathArray: string[]
                 if (OBSERVABLE_DEBUG) cc.log(`set ${pathArray.join('.')} => ${val}`);
                 oldVal = val;
                 doCallback(handle, val, _oldVal, pathArray);
-                if (Object.prototype.toString.call(val) === '[object Object]') {
-                    observableValue(handle, target, pathArray);
+
+                if (val !== null || val !== undefined) {
+                    // 重新劫持子属性
+                    switch (Object.prototype.toString.call(val)) {
+                        case '[object Object]':
+                            observableObject(handle, val, pathArray);
+                            break;
+                        case '[object Array]':
+                            observableCollection(handle, val, pathArray);
+                            break;
+                    }
                 }
             }
         },
@@ -62,18 +81,21 @@ function observableValue(handle: ValueCallback, target: any, pathArray: string[]
         configurable: true
     });
 
-    // 子属性劫持
-    switch (Object.prototype.toString.call(oldVal)) {
-        case '[object Object]':
-            observableObject(handle, oldVal, pathArray);
-            break;
-        case '[object Array]':
-            observableCollection(handle, oldVal, pathArray);
-            break;
+    if (oldVal !== undefined && oldVal !== null) {
+        // 重新劫持子属性
+        switch (Object.prototype.toString.call(oldVal)) {
+            case '[object Object]':
+                observableObject(handle, oldVal, pathArray);
+                break;
+            case '[object Array]':
+                observableCollection(handle, oldVal, pathArray);
+                break;
+        }
     }
 }
 
 function observableObject(handle: ValueCallback, target: any, pathArray: string[]) {
+    // 监听所有属性
     Object.keys(target).forEach(key => {
         let newPathArray = pathArray.slice();
         newPathArray.push(key);
@@ -106,6 +128,13 @@ function observableCollection(handle: ValueCallback, target: any, pathArray: str
 
     // 最后 让该数组实例的 __proto__ 属性指向 假的原型 overrideProto  
     target['__proto__'] = overrideProto;
+
+    // 监听所有数组项
+    for (let i = 0; i < target.length; i++) {
+        let newPathArray = pathArray.slice();
+        newPathArray.push(i.toString());
+        observableValue(handle, target, newPathArray);
+    }
 }
 //#endregion
 
@@ -120,7 +149,7 @@ class ObservableObject {
      * @param tag 标签
      * @param obj 对象
      */
-    constructor(tag:string, obj:any) {
+    constructor(tag: string, obj: any) {
         this.$_obj = obj;
         this.tag = tag;
 
@@ -300,11 +329,11 @@ export class ObservableManager {
     bind(path: string, callback: (newVal: any, oldVal: any, pathArray: string[]) => void, target?: any, useCapture?: boolean): void {
         path = path.trim();
         if (path == '') {
-            console.error(target.node.name, '节点绑定的路径为空');
+            console.error(`path:${getNodePath(target.node)} `, '节点绑定的路径为空');
             return;
         }
         if (path.split('.')[0] === '*') {
-            console.error(path, '路径不合法,可能错误覆盖了其他路径');
+            console.error(`path:${getNodePath(target.node)} `, path, '路径不合法,可能错误覆盖了其他路径');
             return;
         }
         cc.director.on(OBSERVABLE_EMIT_HEAD + path, callback, target, useCapture);

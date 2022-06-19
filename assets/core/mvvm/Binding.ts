@@ -2,6 +2,16 @@ import DataContext from "./DataContext";
 
 const { ccclass, property, executeInEditMode, menu } = cc._decorator;
 
+let getNodePath = (node: cc.Node) => {
+    let nodePath = [];
+    let check = node;
+    while (check) {
+        nodePath.splice(0, 0, check.name);
+        check = check.parent;
+    }
+    return nodePath.join('/');
+}
+
 /** 组件检测数组 */
 const COMP_ARRAY_CHECK = [
     //组件名、默认属性
@@ -160,6 +170,8 @@ export default class Binding extends cc.Component {
             check = check.parent;
             maxLevel--;
         }
+
+        console.error(`path:${getNodePath(node)} `,`组件 Binding `, '找不到 DataContext');
         return null;
     }
 
@@ -204,6 +216,8 @@ export default class Binding extends cc.Component {
 
     /** 设置组件值 */
     private setComponentValue(value: any) {
+        if (value === undefined || value === null) return;
+
         switch (this.componentName) {
             case 'cc.PageView':
                 this.node.getComponent(cc.PageView).setCurrentPageIndex(value);

@@ -3,6 +3,16 @@ import ItemTemplate from "./ItemTemplate";
 
 const { ccclass, property, executeInEditMode, menu } = cc._decorator;
 
+let getNodePath = (node: cc.Node) => {
+    let nodePath = [];
+    let check = node;
+    while (check) {
+        nodePath.splice(0, 0, check.name);
+        check = check.parent;
+    }
+    return nodePath.join('/');
+}
+
 /** UI 数据集合绑定组件 */
 @ccclass
 @executeInEditMode
@@ -61,7 +71,8 @@ export default class ItemsSource extends DataContext {
     // update (dt) {}
 
     private findDataContext(node: cc.Node, maxLevel: number = 9): DataContext {
-        let check = node;
+        // 从父节点开始查找
+        let check = node.parent;
         while (check && maxLevel > 0) {
             let context: DataContext = check.getComponent(DataContext);
             if (context) {
@@ -70,6 +81,8 @@ export default class ItemsSource extends DataContext {
             check = check.parent;
             maxLevel--;
         }
+
+        console.error(`path:${getNodePath(node)} `,`组件 ItemsSource `, '找不到 DataContext');
         return null;
     }
 
@@ -82,7 +95,7 @@ export default class ItemsSource extends DataContext {
             this._path = this._binding;
         }
         else {
-            let context = this.findDataContext(this.node.parent);
+            let context = this.findDataContext(this.node);
             if (!context) {
                 return false;
             }
@@ -96,12 +109,13 @@ export default class ItemsSource extends DataContext {
     }
 
     private onDataChange(newVal: any, oldVal: any, pathArray: string[]) {
+        if (CC_EDITOR) return;
+
         if (Object.prototype.toString.call(newVal) !== '[object Array]') {
             return;
         }
 
         let path = pathArray.join('.');
-
         if (path !== this._property) {
             return;
         }
@@ -110,35 +124,46 @@ export default class ItemsSource extends DataContext {
             return;
         }
 
-        let content = this._template.parent;
-        // 清理旧数据
-        for (let i = 0; i < content.children.length; i++) {
-            let item = content.children[i];
-            if (item !== this._template) {
-                item.destroy();
-            }
+        let content = this._content;
+        // 清空内容
+        let child = content.children;
+        for (let i = child.length - 1; i >= 0; i--) {
+            let item = child[i];
+            this._pool.put(item);
         }
-        this._template.active = false;
-
-        // 添加新数据
-       
+        // 添加新内容
         for (let i = 0; i < newVal.length; i++) {
-            let item = cc.instantiate(this._template);
+            let item = this._pool.get();
+            if (!item) {
+                item = cc.instantiate(this._template);
+            }
             let itemTemplate = item.getComponent(ItemTemplate);
             itemTemplate.setIndex(i);
             item.active = true;
-            item.parent = content;
+            content.addChild(item);
         }
     }
 
+    private _content:cc.Node = null;
     private _template: cc.Node = null;
+    private _pool = null;
     setTemplate(template: cc.Node) {
+        if (CC_EDITOR) return;
+        if (this._template) return;
+
         let itemTemplate = template.getComponent(ItemTemplate);
-        if (!itemTemplate){
+        if (!itemTemplate) {
             cc.warn(`${template.name} must be a ItemTemplate`);
             return;
         }
 
+        if(!this._pool){
+            this._pool = new cc.NodePool(`${this.tag}`);
+        }
+
         this._template = template;
+        this._template.active = false;
+        this._content = template.parent;
+        this._pool.put(template);
     }
 }

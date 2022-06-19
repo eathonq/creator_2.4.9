@@ -46,7 +46,7 @@ export default class ScrollViewDynamic extends cc.Component {
 
     @property({
         type: cc.Integer, min: 1, step: 1,
-        tooltip: '滚动检测单元(值越小检测频率越高)',
+        tooltip: '滚动检测单元\n最佳为内容项高度\n(值越小检测频率越高)',
     })
     scrollUnit = 50;
 
