@@ -39,7 +39,7 @@ export class LocalizedLabel extends cc.Component {
     private componentProperty: string = "";
 
     @property({
-        tooltip: '绑定路径'
+        tooltip: '绑定路径\n# 参数开始标记\n$ 参数分隔符',
     })
     private watchPath: string = "";
 

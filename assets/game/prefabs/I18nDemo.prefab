@@ -913,8 +913,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "自定义日期 2022-06-20 09:42:41",
-    "_N$string": "自定义日期 2022-06-20 09:42:41",
+    "_string": "自定义日期 2022-06-20 02:19:06",
+    "_N$string": "自定义日期 2022-06-20 02:19:06",
     "_fontSize": 20,
     "_lineHeight": 20,
     "_enableWrapText": true,
@@ -1037,8 +1037,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "毫秒时间 09:42:41",
-    "_N$string": "毫秒时间 09:42:41",
+    "_string": "毫秒时间 14:19:06",
+    "_N$string": "毫秒时间 14:19:06",
     "_fontSize": 20,
     "_lineHeight": 20,
     "_enableWrapText": true,
@@ -3704,7 +3704,7 @@
     "_prefab": {
       "__id__": 105
     },
-    "_opacity": 255,
+    "_opacity": 200,
     "_color": {
       "__type__": "cc.Color",
       "r": 255,
