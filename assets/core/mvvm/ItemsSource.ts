@@ -82,7 +82,7 @@ export default class ItemsSource extends DataContext {
             maxLevel--;
         }
 
-        console.error(`path:${getNodePath(node)} `,`组件 ItemsSource `, '找不到 DataContext');
+        cc.warn(`path:${getNodePath(node)} `,`组件 ItemsSource `, '找不到 DataContext');
         return null;
     }
 

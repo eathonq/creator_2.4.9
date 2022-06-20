@@ -16,11 +16,12 @@ let getNodePath = (node: cc.Node) => {
 const COMP_ARRAY_CHECK = [
     //组件名、默认属性
     ['cc.Label', 'string'],
-    ['cc.RichText', 'string'],
     ['cc.EditBox', 'string'],
     ['cc.Toggle', 'isChecked'],
     ['cc.Slider', 'progress'],
     ['cc.ProgressBar', 'progress'],
+    ['cc.Sprite', 'spriteFrame'],   // cc.ProgressBar 组件包含 cc.Sprite 组件，所有需要放在 cc.ProgressBar 组件后面
+    ['cc.RichText', 'string'],
     ['cc.PageView', 'getCurrentPageIndex()'],
 ];
 
@@ -171,7 +172,7 @@ export default class Binding extends cc.Component {
             maxLevel--;
         }
 
-        console.error(`path:${getNodePath(node)} `,`组件 Binding `, '找不到 DataContext');
+        cc.warn(`path:${getNodePath(node)} `, `组件 Binding `, '找不到 DataContext');
         return null;
     }
 
@@ -221,6 +222,15 @@ export default class Binding extends cc.Component {
         switch (this.componentName) {
             case 'cc.PageView':
                 this.node.getComponent(cc.PageView).setCurrentPageIndex(value);
+                break;
+            case 'cc.Sprite':
+                cc.resources.load(value, cc.SpriteFrame, (err: any, spriteFrame: cc.SpriteFrame) => {
+                    if (err) {
+                        cc.warn(`path:${getNodePath(this.node)} `, `组件 Binding `, '找不到 SpriteFrame');
+                        return;
+                    }
+                    this.node.getComponent(cc.Sprite).spriteFrame = spriteFrame;
+                });
                 break;
             default:
                 this.node.getComponent(this.componentName)[this.componentProperty] = value;

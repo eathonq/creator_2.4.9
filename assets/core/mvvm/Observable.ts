@@ -178,7 +178,7 @@ class ObservableObject {
             const propName = props[i];
             if (propName in obj === false) {
                 let tag = this.tag;
-                if (OBSERVABLE_DEBUG) console.warn('[' + propName + '] not find in ' + tag + '.' + path);
+                if (OBSERVABLE_DEBUG) cc.warn('[' + propName + '] not find in ' + tag + '.' + path);
                 break;
             }
             if (i == props.length - 1) {
@@ -197,7 +197,7 @@ class ObservableObject {
             const propName = props[i];
             if ((propName in obj === false)) {
                 let tag = this.tag;
-                if (OBSERVABLE_DEBUG) console.warn('[' + propName + '] not find in ' + tag + '.' + path);
+                if (OBSERVABLE_DEBUG) cc.warn('[' + propName + '] not find in ' + tag + '.' + path);
                 return def;
             }
             obj = obj[propName];
@@ -329,11 +329,11 @@ export class ObservableManager {
     bind(path: string, callback: (newVal: any, oldVal: any, pathArray: string[]) => void, target?: any, useCapture?: boolean): void {
         path = path.trim();
         if (path == '') {
-            console.error(`path:${getNodePath(target.node)} `, '节点绑定的路径为空');
+            cc.warn(`path:${getNodePath(target.node)} `, '节点绑定的路径为空');
             return;
         }
         if (path.split('.')[0] === '*') {
-            console.error(`path:${getNodePath(target.node)} `, path, '路径不合法,可能错误覆盖了其他路径');
+            cc.warn(`path:${getNodePath(target.node)} `, path, '路径不合法,可能错误覆盖了其他路径');
             return;
         }
         cc.director.on(OBSERVABLE_EMIT_HEAD + path, callback, target, useCapture);
@@ -349,7 +349,7 @@ export class ObservableManager {
     unbind(path: string, callback: (newVal: any, oldVal: any, pathArray: string[]) => void, target?: any): void {
         path = path.trim();
         if (path.split('.')[0] === '*') {
-            console.error(path, '路径不合法,可能错误覆盖了其他路径');
+            cc.warn(path, '路径不合法,可能错误覆盖了其他路径');
             return;
         }
         cc.director.off(OBSERVABLE_EMIT_HEAD + path, callback, target);

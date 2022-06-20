@@ -12,15 +12,18 @@ import { User } from "../models/UserModel";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class MVVMData extends ViewModelBase {
+export default class MvvmData extends ViewModelBase {
 
-    //@observable
-    private label: string = "123";
+    @observable
+    private label: string;
 
-    //@observable
+    @observable
     private check: boolean;
 
-    //@observable
+    @observable
+    private image: string;
+
+    @observable
     private user: User;
 
     @observable
@@ -32,6 +35,7 @@ export default class MVVMData extends ViewModelBase {
     start() {
         this.label = "old name";
         this.check = true;
+        this.image = "images/Bookmark16";
 
         this.user = new User;
         this.user.name = "old name";
