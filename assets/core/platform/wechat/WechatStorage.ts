@@ -1,14 +1,10 @@
 import { IStorage, storage } from '../../common/Configuration';
-
 /**
- * Predefined variables
- * Name = ConfigStorage
+ * CREATOR_2.4.9
  * DateTime = Tue Mar 29 2022 10:45:50 GMT+0800 (中国标准时间)
- * Author = vangagh
- * FileBasename = ConfigStorage.ts
- * FileBasenameNoExtension = ConfigStorage
- * URL = db://assets/core/platform/wechat/ConfigStorage.ts
- * ManualUrl = https://docs.cocos.com/creator/3.4/manual/zh/
+ * Author = eathon
+ * github = https://github.com/eathonq/creator_2.4.9.git
+ * email = vangagh@live.cn
  * WechatStorageUrl = https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.setStorageSync.html
  */
 

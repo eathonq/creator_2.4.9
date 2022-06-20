@@ -1,18 +1,13 @@
-import { i18n } from "./LanguageData";
-
-const { ccclass, property, executeInEditMode, menu } = cc._decorator;
-
 /**
- * Predefined variables
- * Name = LocalizedLabel
- * DateTime = Sat Apr 30 2022 17:24:23 GMT+0800 (中国标准时间)
- * Author = vangagh
- * FileBasename = LocalizedLabel.ts
- * FileBasenameNoExtension = LocalizedLabel
- * URL = db://assets/core/i18n/LocalizedLabel.ts
- * ManualUrl = https://docs.cocos.com/creator/3.4/manual/zh/
- *
+ * CREATOR_2.4.9
+ * DateTime = Tue May 03 2022 11:51:04 GMT+0800 (中国标准时间)
+ * Author = eathon
+ * github = https://github.com/eathonq/creator_2.4.9.git
+ * email = vangagh@live.cn
  */
+
+import { i18n } from "./LanguageData";
+const { ccclass, property, executeInEditMode, menu } = cc._decorator;
 
 /** 组件检测数组 */
 const COMP_ARRAY_CHECK = [

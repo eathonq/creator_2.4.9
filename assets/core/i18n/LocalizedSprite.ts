@@ -1,17 +1,13 @@
+/**
+ * CREATOR_2.4.9
+ * DateTime = Tue May 03 2022 11:51:04 GMT+0800 (中国标准时间)
+ * Author = eathon
+ * github = https://github.com/eathonq/creator_2.4.9.git
+ * email = vangagh@live.cn
+ */
+
 import { i18n } from './LanguageData';
 const { ccclass, property, executeInEditMode, menu } = cc._decorator;
-
-/**
- * Predefined variables
- * Name = LocalizedSprite
- * DateTime = Sat Apr 30 2022 17:24:34 GMT+0800 (中国标准时间)
- * Author = vangagh
- * FileBasename = LocalizedSprite.ts
- * FileBasenameNoExtension = LocalizedSprite
- * URL = db://assets/core/i18n/LocalizedSprite.ts
- * ManualUrl = https://docs.cocos.com/creator/3.4/manual/zh/
- *
- */
 
 /**
  * [i18n-LocalizedSprite]
@@ -65,7 +61,7 @@ export class LocalizedSprite extends cc.Component {
         this.resetValue();
     }
 
-    protected start(): void {}
+    protected start(): void { }
 
     protected onDestroy() {
         i18n.unregister(this);

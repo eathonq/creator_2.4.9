@@ -1,4 +1,11 @@
-// 参考 https://github.com/melkir/A-Star-Python
+/**
+ * CREATOR_2.4.9
+ * DateTime = Sun May 01 2022 13:11:17 GMT+0800 (中国标准时间)
+ * Author = eathon
+ * github = https://github.com/eathonq/creator_2.4.9.git
+ * email = vangagh@live.cn
+ * Reference = https://github.com/melkir/A-Star-Python
+ */
 
 //#region Graph
 

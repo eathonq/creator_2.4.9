@@ -1,4 +1,12 @@
 /**
+ * CREATOR_2.4.9
+ * DateTime = Sun May 01 2022 13:11:17 GMT+0800 (中国标准时间)
+ * Author = eathon
+ * github = https://github.com/eathonq/creator_2.4.9.git
+ * email = vangagh@live.cn
+ */
+
+/**
  * object 数据转换成 key=value&key2=value2 的字符串
  * @param obj object 数据
  * @returns 
