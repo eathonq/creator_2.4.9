@@ -1,12 +1,12 @@
-import { IStorage, storage } from '../../common/Configuration';
 /**
  * CREATOR_2.4.9
- * DateTime = Tue Mar 29 2022 10:45:50 GMT+0800 (中国标准时间)
+ * DateTime = Sun May 01 2022 13:11:17 GMT+0800 (中国标准时间)
  * Author = eathon
  * github = https://github.com/eathonq/creator_2.4.9.git
  * email = vangagh@live.cn
- * WechatStorageUrl = https://developers.weixin.qq.com/miniprogram/dev/api/storage/wx.setStorageSync.html
  */
+
+import { IStorage, storage } from '../../common/Configuration';
 
 /** 检测微信游戏平台 */
 let checkWechatGame = ():boolean => { return cc.sys.WECHAT_GAME == cc.sys.platform};

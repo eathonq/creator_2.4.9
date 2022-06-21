@@ -271,7 +271,6 @@ export default class ScrollViewDynamic extends cc.Component {
         this._scrollToCheckLoadMore = false;
         let self = this;
         cc.tween(this.scrollView.node).delay(timeInSecond + 0.1).call(() => {
-            let count = self.content.childrenCount;
             if (self._scrollToCheckLoadMore) {
                 self.scrollTo(preIndex, 0.2);
             }
