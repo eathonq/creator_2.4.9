@@ -6,19 +6,10 @@
  * email = vangagh@live.cn
  */
 
+import Locator from "../common/Locator";
 import DataContext from "./DataContext";
 
 const { ccclass, property, executeInEditMode, menu } = cc._decorator;
-
-let getNodePath = (node: cc.Node) => {
-    let nodePath = [];
-    let check = node;
-    while (check) {
-        nodePath.splice(0, 0, check.name);
-        check = check.parent;
-    }
-    return nodePath.join('/');
-}
 
 /** 组件检测数组 */
 const COMP_ARRAY_CHECK = [
@@ -180,7 +171,7 @@ export default class Binding extends cc.Component {
             maxLevel--;
         }
 
-        cc.warn(`path:${getNodePath(node)} `, `组件 Binding `, '找不到 DataContext');
+        cc.warn(`path:${Locator.getNodeFullPath(node)} `, `组件 Binding `, '找不到 DataContext');
         return null;
     }
 
@@ -234,7 +225,7 @@ export default class Binding extends cc.Component {
             case 'cc.Sprite':
                 cc.resources.load(value, cc.SpriteFrame, (err: any, spriteFrame: cc.SpriteFrame) => {
                     if (err) {
-                        cc.warn(`path:${getNodePath(this.node)} `, `组件 Binding `, '找不到 SpriteFrame');
+                        cc.warn(`path:${Locator.getNodeFullPath(this.node)} `, `组件 Binding `, '找不到 SpriteFrame');
                         return;
                     }
                     this.node.getComponent(cc.Sprite).spriteFrame = spriteFrame;

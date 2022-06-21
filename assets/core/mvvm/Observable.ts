@@ -6,6 +6,8 @@
  * email = vangagh@live.cn
  */
 
+import Locator from "../common/Locator";
+
 const OBSERVABLE_DEBUG = false;
 const OBSERVABLE_EMIT_HEAD = 'observable_emit:';
 
@@ -14,16 +16,6 @@ type ValueCallback = {
     target: any,
     callback: (newVal: any, oldVal: any, pathArray: string[]) => void
 };
-
-let getNodePath = (node: cc.Node) => {
-    let nodePath = [];
-    let check = node;
-    while (check) {
-        nodePath.splice(0, 0, check.name);
-        check = check.parent;
-    }
-    return nodePath.join('/');
-}
 
 /**
  * 通知属性装饰器   
@@ -337,11 +329,11 @@ export class ObservableManager {
     bind(path: string, callback: (newVal: any, oldVal: any, pathArray: string[]) => void, target?: any, useCapture?: boolean): void {
         path = path.trim();
         if (path == '') {
-            cc.warn(`path:${getNodePath(target.node)} `, '节点绑定的路径为空');
+            cc.warn(`path:${Locator.getNodeFullPath(target.node)} `, '节点绑定的路径为空');
             return;
         }
         if (path.split('.')[0] === '*') {
-            cc.warn(`path:${getNodePath(target.node)} `, path, '路径不合法,可能错误覆盖了其他路径');
+            cc.warn(`path:${Locator.getNodeFullPath(target.node)} `, path, '路径不合法,可能错误覆盖了其他路径');
             return;
         }
         cc.director.on(OBSERVABLE_EMIT_HEAD + path, callback, target, useCapture);

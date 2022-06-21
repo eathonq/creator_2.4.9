@@ -6,20 +6,11 @@
  * email = vangagh@live.cn
  */
 
+import Locator from "../common/Locator";
 import DataContext from "./DataContext";
 import ItemTemplate from "./ItemTemplate";
 
 const { ccclass, property, executeInEditMode, menu } = cc._decorator;
-
-let getNodePath = (node: cc.Node) => {
-    let nodePath = [];
-    let check = node;
-    while (check) {
-        nodePath.splice(0, 0, check.name);
-        check = check.parent;
-    }
-    return nodePath.join('/');
-}
 
 /** UI 数据集合绑定组件 */
 @ccclass
@@ -90,7 +81,7 @@ export default class ItemsSource extends DataContext {
             maxLevel--;
         }
 
-        cc.warn(`path:${getNodePath(node)} `,`组件 ItemsSource `, '找不到 DataContext');
+        cc.warn(`path:${Locator.getNodeFullPath(node)} `, `组件 ItemsSource `, '找不到 DataContext');
         return null;
     }
 
@@ -152,7 +143,7 @@ export default class ItemsSource extends DataContext {
         }
     }
 
-    private _content:cc.Node = null;
+    private _content: cc.Node = null;
     private _template: cc.Node = null;
     private _pool = null;
     setTemplate(template: cc.Node) {
@@ -165,7 +156,7 @@ export default class ItemsSource extends DataContext {
             return;
         }
 
-        if(!this._pool){
+        if (!this._pool) {
             this._pool = new cc.NodePool(`${this.tag}`);
         }
 
