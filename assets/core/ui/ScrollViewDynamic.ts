@@ -235,8 +235,8 @@ export default class ScrollViewDynamic extends cc.Component {
 
     /**
      * 获取指定索引的内容项目
-     * @note 滚动索引超过当前最大索引，将触发多次滚动
-     * @param index 索引(0开始)
+     * @param index 索引
+     * @note 0开始，滚动索引超过当前最大索引，将触发多次滚动
      */
     scrollTo(index: number, timeInSecond = .5) {
         let preIndex = index;
@@ -270,9 +270,9 @@ export default class ScrollViewDynamic extends cc.Component {
 
         this._scrollToCheckLoadMore = false;
         let self = this;
-        cc.tween(this.scrollView.node).delay(timeInSecond + 0.1).call(() => {
+        cc.tween(this.scrollView.node).delay(timeInSecond + .1).call(() => {
             if (self._scrollToCheckLoadMore) {
-                self.scrollTo(preIndex, 0.2);
+                self.scrollTo(preIndex, .2);
             }
         }).start();
     }
