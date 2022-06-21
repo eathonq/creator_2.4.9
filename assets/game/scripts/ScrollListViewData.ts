@@ -5,7 +5,6 @@
 // Learn life-cycle callbacks:
 //  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
 
-import ScrollListView, { ScrollListViewEvent } from "../../core/ui/ScrollListView";
 import ScrollViewDynamic from "../../core/ui/ScrollViewDynamic";
 
 const { ccclass, property } = cc._decorator;
@@ -43,7 +42,7 @@ export default class ScrollListViewData extends cc.Component {
     }
 
     private* infiniteLoadMore() {
-        let max = 30;
+        let max = 50;
         let start = this.scrollView.content.children.length;
         for (let i = start; i < start + 10 && i < max; i++) {
             let item = cc.instantiate(this.templates[i % 2]);
@@ -72,6 +71,7 @@ export default class ScrollListViewData extends cc.Component {
     }
 
     private initScrollView() {
+        // 普通加载方案
         // let onLoadMore = () => {
         //     let max = 500;
         //     let start = this.scrollView.content.children.length;
@@ -85,8 +85,9 @@ export default class ScrollListViewData extends cc.Component {
         //     }
         // };
         // onLoadMore();
-        this.iterator = this.infiniteLoadMore();
 
+        // 帧加载方案
+        this.iterator = this.infiniteLoadMore();
         let scrollViewDynamic = this.scrollView.node.getComponent(ScrollViewDynamic);
         scrollViewDynamic.setPreloadMore(50, ()=>{
             this.iterator = this.infiniteLoadMore();

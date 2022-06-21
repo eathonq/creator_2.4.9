@@ -155,7 +155,7 @@
     "viewContent": {
       "__id__": 5
     },
-    "defaultView": "MVVMDemo",
+    "defaultView": "GuideDemo",
     "defaultDialog": "DialogDemo",
     "defaultTooltip": "",
     "_viewPrefabList": [
@@ -179,6 +179,9 @@
       },
       {
         "__uuid__": "6b7867c1-9a53-4e3a-88f6-199a2ec17958"
+      },
+      {
+        "__uuid__": "316e145b-99ab-479d-91ec-099585decb97"
       }
     ],
     "_id": "91u3R7w9ZMI5ZpxuYTo8dw"
@@ -2124,7 +2127,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Guide",
+    "_name": "ViewGuide",
     "_objFlags": 0,
     "_parent": {
       "__id__": 5

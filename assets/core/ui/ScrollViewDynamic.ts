@@ -206,6 +206,7 @@ export default class ScrollViewDynamic extends cc.Component {
         }
     }
 
+    private _scrollToCheckLoadMore = false;
     private _preloadUnit = 0;
     private _onPreloadMore = null;
     private _target = null;
@@ -216,6 +217,8 @@ export default class ScrollViewDynamic extends cc.Component {
             else
                 this._onPreloadMore();
         }
+
+        this._scrollToCheckLoadMore = true;
     }
 
     /**
@@ -232,24 +235,46 @@ export default class ScrollViewDynamic extends cc.Component {
 
     /**
      * 获取指定索引的内容项目
+     * @note 滚动索引超过当前最大索引，将触发多次滚动
      * @param index 索引(0开始)
      */
-    scrollTo(index: number) {
+    scrollTo(index: number, timeInSecond = .5) {
+        let preIndex = index;
+
+        // 索引安全范围检查
         if (index < 0) index = 0;
         if (index >= this.content.children.length) index = this.content.children.length - 1;
 
+        // 计算滚动位置
         let pos: cc.Vec2;
         if (this.direction == cc.Scrollbar.Direction.VERTICAL) {
             let child = this.content.children[index];
             let childTop = -child.position.y - child.height * child.anchorY;
+            let layout = this.content.getComponent(cc.Layout);
+            if (layout) {
+                childTop -= layout.spacingY;
+            }
             pos = cc.v2(child.position.x, childTop);
         }
         else {
             let child = this.content.children[index];
             let childLeft = child.position.x - child.width * child.anchorX;
+            let layout = this.content.getComponent(cc.Layout);
+            if (layout) {
+                childLeft -= layout.spacingX;
+            }
             pos = cc.v2(childLeft, child.position.y);
         }
 
-        this.scrollView.scrollToOffset(pos, .5);
+        this.scrollView.scrollToOffset(pos, timeInSecond);
+
+        this._scrollToCheckLoadMore = false;
+        let self = this;
+        cc.tween(this.scrollView.node).delay(timeInSecond + 0.1).call(() => {
+            let count = self.content.childrenCount;
+            if (self._scrollToCheckLoadMore) {
+                self.scrollTo(preIndex, 0.2);
+            }
+        }).start();
     }
 }

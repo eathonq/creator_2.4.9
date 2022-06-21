@@ -6133,7 +6133,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 253.4,
+      "width": 251.23,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -6185,8 +6185,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "NetworkDemo",
-    "_N$string": "NetworkDemo",
+    "_string": "network demo",
+    "_N$string": "network demo",
     "_fontSize": 40,
     "_lineHeight": 40,
     "_enableWrapText": true,

@@ -11690,7 +11690,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 310.57,
+      "width": 311.19,
       "height": 44.1
     },
     "_anchorPoint": {
@@ -11742,8 +11742,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "ScrollListViewDemo",
-    "_N$string": "ScrollListViewDemo",
+    "_string": "scroll list view demo",
+    "_N$string": "scroll list view demo",
     "_fontSize": 35,
     "_lineHeight": 35,
     "_enableWrapText": true,

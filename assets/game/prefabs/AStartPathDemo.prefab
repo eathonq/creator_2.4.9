@@ -3422,7 +3422,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 231.23,
+      "width": 237.95,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -3474,8 +3474,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "A*PathDemo",
-    "_N$string": "A*PathDemo",
+    "_string": "a* path demo",
+    "_N$string": "a* path demo",
     "_fontSize": 40,
     "_lineHeight": 40,
     "_enableWrapText": true,

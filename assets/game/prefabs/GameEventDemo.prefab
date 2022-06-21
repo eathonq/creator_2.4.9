@@ -1893,7 +1893,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 97.87,
+      "width": 320.2,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -1945,8 +1945,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "Label",
-    "_N$string": "Label",
+    "_string": "game event demo",
+    "_N$string": "game event demo",
     "_fontSize": 40,
     "_lineHeight": 40,
     "_enableWrapText": true,
