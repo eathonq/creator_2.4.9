@@ -26,17 +26,17 @@ export default class Locator {
         return segments;
     }
 
-    static timeout: number;
+    /** 定位超时时间10s */
+    static timeout: number = 10 * 1000;
     private static locating: boolean = false;
     private static startTime: number = 0;
     /**
-     * 定位节点
+     * 定位节点(支持超时定位)
      * @param root 根节点
      * @param locator 定位地址
-     * @param cb 回调
      * @returns 
      */
-    static locateNode(root: cc.Node, locator: string, cb: Function) {
+    static async locateNode(root: cc.Node, locator: string): Promise<cc.Node> {
         if (!this.locating) {
             this.startTime = Date.now();
             this.locating = true;
@@ -70,20 +70,31 @@ export default class Locator {
             node = child;
         }
 
-        if (node && node.active && cb) {
-            this.locating = false;
-            cb(null, node);
-        } else if (cb) {
-            if (Date.now() - this.startTime > this.timeout) {
-                cb({ error: 'timeout', locator });
-            } else {
-                setTimeout(function () {
-                    Locator.locateNode(root, locator, cb);
-                }, 10);
-            }
-        }
+        // 正常定位
+        // return new Promise<cc.Node>((resolve, reject) => {
+        //     this.locating = true;
+        //     resolve(node);
+        // });
 
-        return node;
+        // 超时定位
+        if (node && node.active) {
+            return new Promise<cc.Node>((resolve, reject) => {
+                this.locating = false;
+                resolve(node);
+            });
+        }
+        else {
+            if (Date.now() - this.startTime > this.timeout) {
+                cc.log('Locator timeout ' + locator);
+                return null;
+            }
+            return await new Promise((resolve, reject) => {
+                let timer = setTimeout(() => {
+                    clearTimeout(timer);
+                    resolve(this.locateNode(root, locator));
+                }, 100);
+            });
+        }
     }
 
     /**

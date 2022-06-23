@@ -25,16 +25,16 @@ class ViewData {
 
     show(data?: any) {
         this.viewBase.node.active = true;
-        this.viewBase.node.emit(ViewEvent, ViewState.SHOW, data);
+        this.viewBase.node.emit(ViewEvent, ViewState.Show, data);
     }
 
     hide() {
-        this.viewBase.node.emit(ViewEvent, ViewState.HIDE);
+        this.viewBase.node.emit(ViewEvent, ViewState.Hide);
         this.viewBase.node.active = false;
     }
 
     close() {
-        this.viewBase.node.emit(ViewEvent, ViewState.CLOSE);
+        this.viewBase.node.emit(ViewEvent, ViewState.Close);
         this.viewBase.node.active = false;
         if (this.isCreate) {
             this.viewBase.node.destroy();
@@ -304,13 +304,13 @@ export default class ViewManager extends cc.Component {
             if (viewPrefab == null) continue;
             let viewBase: ViewBase = viewPrefab.data.getComponent(ViewBase);
             if (viewBase && viewBase.isDefault) {
-                if (viewBase.viewType == ViewType.VIEW) {
+                if (viewBase.viewType == ViewType.View) {
                     this.defaultView = viewBase.viewName;
                 }
-                else if (viewBase.viewType == ViewType.DIALOG) {
+                else if (viewBase.viewType == ViewType.Dialog) {
                     this.defaultDialog = viewBase.viewName;
                 }
-                else if (viewBase.viewType == ViewType.TOOLTIP) {
+                else if (viewBase.viewType == ViewType.Tooltip) {
                     this.defaultTooltip = viewBase.viewName;
                 }
             }
@@ -436,7 +436,7 @@ export default class ViewManager extends cc.Component {
      * @param node 视图节点
      * @param type 视图类型
      */
-    setViewNode(name: string, node: cc.Node, type: ViewType = ViewType.VIEW): void {
+    setViewNode(name: string, node: cc.Node, type: ViewType = ViewType.View): void {
         let viewBase = node.getComponent(ViewBase);
         if (!viewBase) {
             viewBase = node.addComponent(ViewBase);
@@ -456,13 +456,13 @@ export default class ViewManager extends cc.Component {
         let viewType = this.getViewType(name);
         if (viewType == null) return;
         switch (viewType) {
-            case ViewType.VIEW:
+            case ViewType.View:
                 this.showView(name, data);
                 break;
-            case ViewType.DIALOG:
+            case ViewType.Dialog:
                 this.showDialog(name, data);
                 break;
-            case ViewType.TOOLTIP:
+            case ViewType.Tooltip:
                 this.showTooltip(name, data);
                 break;
             default:
@@ -478,13 +478,13 @@ export default class ViewManager extends cc.Component {
         let viewType = this.getViewType(name);
         if (viewType == null) return;
         switch (viewType) {
-            case ViewType.VIEW:
+            case ViewType.View:
                 this.backView(name);
                 break;
-            case ViewType.DIALOG:
+            case ViewType.Dialog:
                 this.closeDialog(name);
                 break;
-            case ViewType.TOOLTIP:
+            case ViewType.Tooltip:
                 this.closeTooltip(name);
                 break;
             default:
@@ -498,7 +498,7 @@ export default class ViewManager extends cc.Component {
      * @param data 数据
      */
     showView(name?: string, data?: any): void {
-        if (!name) name = this.getDefaultName(ViewType.VIEW);
+        if (!name) name = this.getDefaultName(ViewType.View);
         if (!name) return;
 
         if (this.viewStack.popTo(name, data)) {
@@ -534,7 +534,7 @@ export default class ViewManager extends cc.Component {
      * @param data 数据
      */
     showDialog(name?: string, data?: any): void {
-        if (!name) name = this.getDefaultName(ViewType.DIALOG);
+        if (!name) name = this.getDefaultName(ViewType.Dialog);
         if (!name) return;
 
         let viewData = this.dialogList.getViewData(name);
@@ -551,7 +551,7 @@ export default class ViewManager extends cc.Component {
      * @param name 对话框名称 
      */
     closeDialog(name?: string): void {
-        if (!name) name = this.getDefaultName(ViewType.DIALOG);
+        if (!name) name = this.getDefaultName(ViewType.Dialog);
         if (!name) return;
 
         let viewData = this.dialogList.getViewData(name);
@@ -566,7 +566,7 @@ export default class ViewManager extends cc.Component {
      * @param data 数据
      */
     showTooltip(name?: string, data?: any): void {
-        if (!name) name = this.getDefaultName(ViewType.TOOLTIP);
+        if (!name) name = this.getDefaultName(ViewType.Tooltip);
         if (!name) return;
 
         let viewData = this.tooltipList.getViewData(name);
@@ -583,7 +583,7 @@ export default class ViewManager extends cc.Component {
      * @param name 提示框名称 
      */
     closeTooltip(name?: string): void {
-        if (!name) name = this.getDefaultName(ViewType.TOOLTIP);
+        if (!name) name = this.getDefaultName(ViewType.Tooltip);
         if (!name) return;
 
         let viewData = this.tooltipList.getViewData(name);

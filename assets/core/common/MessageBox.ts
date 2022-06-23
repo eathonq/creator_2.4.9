@@ -72,4 +72,12 @@ export class MessageBox {
             ViewManager.instance.showDialog(dialog, data);
         });
     }
+
+    /**
+     * 关闭消息框
+     * @param dialog 对话框类型名称 
+     */
+    static Close(dialog: string) {
+        ViewManager.instance.closeDialog(dialog);
+    }
 }

@@ -11,11 +11,11 @@ const { ccclass, property, executeInEditMode, menu } = cc._decorator;
 /** 视图类型 */
 export enum ViewType {
     /** 全屏视图 */
-    VIEW = 0,
+    View = 0,
     /** 对话框 */
-    DIALOG = 1,
+    Dialog = 1,
     /** 提示框 */
-    TOOLTIP = 2,
+    Tooltip = 2,
 }
 
 /** 
@@ -28,11 +28,11 @@ export const ViewEvent = "VIEW_EVENT";
 /** 视图状态 */
 export enum ViewState {
     /** 显示 */
-    SHOW,
+    Show,
     /** 隐藏 */
-    HIDE,
+    Hide,
     /** 关闭 */
-    CLOSE,
+    Close,
 }
 
 @ccclass
@@ -47,7 +47,7 @@ export class ViewBase extends cc.Component {
         tooltip: "视图类型",
         type: cc.Enum(ViewType),
     })
-    viewType: ViewType = ViewType.VIEW;
+    viewType: ViewType = ViewType.View;
     @property({
         tooltip: "是否默认显示",
     })
@@ -75,7 +75,7 @@ export class ViewBase extends cc.Component {
         }
     }
 
-    closeCallback:Function = null;
+    closeCallback: Function = null;
     onCloseEvent(event: cc.Event.EventTouch, customEventData: string) {
         if (this.closeCallback) {
             this.closeCallback(this.viewName);

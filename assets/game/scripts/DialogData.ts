@@ -29,7 +29,7 @@ export default class DialogData extends cc.Component {
 
     protected onLoad() {
         this.node.on(ViewEvent, (type: ViewState, data: any) => {
-            if (type == ViewState.SHOW && data != null) {
+            if (type == ViewState.Show && data != null) {
                 this._data = data;
             }
         }, this);
