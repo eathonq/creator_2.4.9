@@ -120,7 +120,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 121.44,
+      "width": 238.16,
       "height": 65
     },
     "_anchorPoint": {
@@ -159,7 +159,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Message",
+    "_name": "Label",
     "_objFlags": 0,
     "_parent": {
       "__id__": 2
@@ -184,7 +184,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 101.44,
+      "width": 168.16,
       "height": 31.5
     },
     "_anchorPoint": {
@@ -196,7 +196,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -50.72,
+        -109.08,
         2.5,
         0,
         0,
@@ -236,8 +236,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "message",
-    "_N$string": "message",
+    "_string": "Tooltip content.",
+    "_N$string": "Tooltip content.",
     "_fontSize": 25,
     "_lineHeight": 25,
     "_enableWrapText": true,
@@ -277,7 +277,7 @@
         "__id__": 7
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 14
@@ -308,7 +308,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        75.72,
+        109.08,
         2.5,
         0,
         0,
@@ -731,7 +731,7 @@
     "_enabled": true,
     "_layoutSize": {
       "__type__": "cc.Size",
-      "width": 121.44,
+      "width": 238.16,
       "height": 65
     },
     "_resize": 1,
@@ -812,7 +812,7 @@
       "__id__": 1
     },
     "_enabled": true,
-    "message": {
+    "content": {
       "__id__": 4
     },
     "_id": ""

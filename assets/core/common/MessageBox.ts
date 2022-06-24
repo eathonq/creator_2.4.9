@@ -45,16 +45,16 @@ export const enum DialogResult {
 export class MessageBox {
     /**
      * 显示消息框
-     * @param message 消息内容 
+     * @param content 消息内容 
      * @param title 标题
      * @param buttons 按钮类型
      * @param dialog 指定弹窗类型名称
      * @returns 
      */
-    static async Show(message: string, title?: string, buttons?: MessageBoxButtons, dialog?: string) {
+    static async Show(content: string, title?: string, buttons?: MessageBoxButtons, dialog?: string) {
         if (buttons == undefined) buttons = MessageBoxButtons.OK;
         return new Promise<DialogResult>((resolve, reject) => {
-            let data = { title: title, message: message, buttons: buttons, callback: resolve };
+            let data = { title, content, buttons, resolve };
             ViewManager.instance.showDialog(dialog, data);
         });
     }
@@ -68,7 +68,7 @@ export class MessageBox {
     static async Dialog(dialog: string, data?: any) {
         if (!data) data = {};
         return new Promise<DialogResult>((resolve, reject) => {
-            data.callback = resolve;
+            data.resolve = resolve;
             ViewManager.instance.showDialog(dialog, data);
         });
     }

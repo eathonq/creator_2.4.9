@@ -28,26 +28,34 @@ export const ViewEvent = "VIEW_EVENT";
 /** 视图状态 */
 export enum ViewState {
     /** 显示 */
-    Show,
+    Show = 0,
     /** 隐藏 */
-    Hide,
+    Hide = 1,
     /** 关闭 */
-    Close,
+    Close = 2,
+    /** 数据通知 */
+    Data = 3,
 }
 
+/**
+ * 视图基类
+ */
 @ccclass
 @executeInEditMode
 @menu("common/ViewBase")
-export class ViewBase extends cc.Component {
+export default class ViewBase extends cc.Component {
+
     @property({
         tooltip: "视图名称",
     })
     viewName: string = "";
+
     @property({
         tooltip: "视图类型",
         type: cc.Enum(ViewType),
     })
     viewType: ViewType = ViewType.View;
+
     @property({
         tooltip: "是否默认显示",
     })
@@ -64,7 +72,7 @@ export class ViewBase extends cc.Component {
     protected start() { }
 
     protected onDestroy(): void {
-        this.closeCallback = null;
+        this.doClose = null;
     }
 
     private checkEditorComponent() {
@@ -75,10 +83,10 @@ export class ViewBase extends cc.Component {
         }
     }
 
-    closeCallback: Function = null;
+    private doClose: Function = null;
     onCloseEvent(event: cc.Event.EventTouch, customEventData: string) {
-        if (this.closeCallback) {
-            this.closeCallback(this.viewName);
+        if (this.doClose) {
+            this.doClose(this.viewName);
         }
     }
 }

@@ -59,7 +59,7 @@ export default class GuideCommand {
 
     static async doTooltip(command: { type: GuideType, data: string, time: number }) {
         return new Promise<void>(async (resolve, reject) => {
-            ViewManager.instance.showTooltip(this.tollTip, command.data);
+            ViewManager.instance.showTooltip(this.tollTip, { content: command.data, resolve });
             setTimeout(() => {
                 ViewManager.instance.closeTooltip(this.tollTip);
                 resolve();

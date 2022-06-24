@@ -6,33 +6,51 @@
  * email = vangagh@live.cn
  */
 
-import { ViewBase, ViewEvent, ViewState, ViewType } from "./ViewBase";
+import ViewBase, { ViewEvent, ViewState, ViewType } from "./ViewBase";
 
 const { ccclass, property, executeInEditMode, menu } = cc._decorator;
 
 /** 视图数据 */
 class ViewData {
-    constructor(viewBase: ViewBase, isCreate: boolean) {
+    constructor(viewBase: ViewBase, isCreate: boolean, doClose?: Function) {
         this.viewBase = viewBase;
         this.isCreate = isCreate;
+
+        if (doClose) {
+            this.viewBase['doClose'] = doClose;
+        }
+    }
+
+    get viewName() {
+        return this.viewBase.viewName;
     }
 
     /** 视图基础数据 */
-    viewBase: ViewBase = null;
+    private viewBase: ViewBase = null;
 
-    /** 新创建标识（需要删除） */
-    isCreate: boolean = false;
+    /** 新创建标识 */
+    private isCreate: boolean = false;
 
+    /**
+     * 显示视图
+     * @param data 数据
+     */
     show(data?: any) {
         this.viewBase.node.active = true;
         this.viewBase.node.emit(ViewEvent, ViewState.Show, data);
     }
 
+    /**
+     * 隐藏视图
+     */
     hide() {
         this.viewBase.node.emit(ViewEvent, ViewState.Hide);
         this.viewBase.node.active = false;
     }
 
+    /**
+     * 关闭视图
+     */
     close() {
         this.viewBase.node.emit(ViewEvent, ViewState.Close);
         this.viewBase.node.active = false;
@@ -41,13 +59,21 @@ class ViewData {
         }
         this.viewBase = null;
     }
+
+    /**
+     * 数据通知
+     * @param data 数据
+     */
+    data(data?: any) {
+        this.viewBase.node.emit(ViewEvent, ViewState.Data, data);
+    }
 }
 
 class DialogList {
     private dialogList: ViewData[] = [];
 
     getViewData(name: string): ViewData {
-        return this.dialogList.find(v => v.viewBase.viewName === name);
+        return this.dialogList.find(v => v.viewName === name);
     }
 
     push(viewData: ViewData, data?: any) {
@@ -69,7 +95,7 @@ class TooltipList {
     private tooltipList: ViewData[] = [];
 
     getViewData(name: string): ViewData {
-        return this.tooltipList.find(v => v.viewBase.viewName === name);
+        return this.tooltipList.find(v => v.viewName === name);
     }
 
     push(viewData: ViewData, data?: any) {
@@ -93,7 +119,7 @@ class ViewStack {
     private viewList: ViewData[] = [];
 
     getViewData(name: string): ViewData {
-        return this.viewList.find(v => v.viewBase.viewName === name);
+        return this.viewList.find(v => v.viewName === name);
     }
 
     /**
@@ -135,7 +161,7 @@ class ViewStack {
         }
         // 视图以及后面的所有视图都退出
         else {
-            let index = this.viewList.findIndex(v => v.viewBase.viewName === name);
+            let index = this.viewList.findIndex(v => v.viewName === name);
             if (index >= 0) {
                 if (index - 1 >= 0) {
                     let viewData = this.viewList[index - 1];
@@ -159,7 +185,7 @@ class ViewStack {
     popTo(name: string, data?: any): boolean {
         if (!name) return false;
 
-        let index = this.viewList.findIndex(v => v.viewBase.viewName === name);
+        let index = this.viewList.findIndex(v => v.viewName === name);
         if (index >= 0) {
 
             // 最后一个视图不需要关闭
@@ -185,7 +211,7 @@ class ViewStack {
     remove(name: string) {
         if (this.viewList.length == 1) return;
 
-        let index = this.viewList.findIndex(v => v.viewBase.viewName === name);
+        let index = this.viewList.findIndex(v => v.viewName === name);
         if (index >= 0) {
             if (index = this.viewList.length - 1) return this.pop();
 
@@ -345,13 +371,12 @@ export default class ViewManager extends cc.Component {
             let newViewNode = cc.instantiate(viewTemplate.node);
             let newViewBase = newViewNode.getComponent(ViewBase);
             this.viewContent.addChild(newViewNode);
-            viewData = new ViewData(newViewBase, true);
+            viewData = new ViewData(newViewBase, true, this.close.bind(this));
         }
         else {
-            viewData = new ViewData(viewTemplate.viewBase, false);
+            viewData = new ViewData(viewTemplate.viewBase, false, this.close.bind(this));
         }
 
-        viewData.viewBase.closeCallback = this.close.bind(this);
         return viewData;
     }
 
@@ -537,8 +562,11 @@ export default class ViewManager extends cc.Component {
         if (!name) name = this.getDefaultName(ViewType.Dialog);
         if (!name) return;
 
+        // 如果已经存在，则不再创建
         let viewData = this.dialogList.getViewData(name);
-        if (!viewData) viewData = this.createViewData(name);
+        if (viewData) return;
+
+        viewData = this.createViewData(name);
         if (!viewData) return;
 
         this.dialogList.push(viewData, data);
@@ -569,8 +597,14 @@ export default class ViewManager extends cc.Component {
         if (!name) name = this.getDefaultName(ViewType.Tooltip);
         if (!name) return;
 
+        // 重复提示框，重新设置数据
         let viewData = this.tooltipList.getViewData(name);
-        if (!viewData) viewData = this.createViewData(name);
+        if (viewData) {
+            viewData.data(data);
+            return;
+        }
+
+        viewData = this.createViewData(name);
         if (!viewData) return;
 
         this.tooltipList.push(viewData, data);
