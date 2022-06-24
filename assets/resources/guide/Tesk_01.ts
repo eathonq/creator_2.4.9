@@ -7,7 +7,7 @@ let Task_01 = {
     steps: [
         {
             name: "Step_ClickA_Tooltip",
-            command: { type: GuideType.Tooltip, data: "请点击 Button A", time: 5 * 1000 },
+            command: { type: GuideType.Tooltip, tooltip:"TooltipDemo", data: "请点击 Button A", time: 5 * 1000 },
         },
         {
             name: "Step_ClickA",

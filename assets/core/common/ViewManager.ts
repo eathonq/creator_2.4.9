@@ -17,7 +17,7 @@ class ViewData {
         this.isCreate = isCreate;
 
         if (doClose) {
-            this.viewBase['doClose'] = doClose;
+            this.viewBase['_doClose'] = doClose;
         }
     }
 
@@ -497,7 +497,8 @@ export default class ViewManager extends cc.Component {
 
     /**
      * 关闭视图
-     * @param name 视图名称 
+     * @param name 视图名称
+     * @returns 
      */
     close(name: string): void {
         let viewType = this.getViewType(name);

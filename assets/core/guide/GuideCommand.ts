@@ -15,8 +15,6 @@ export enum GuideType {
     Click = 0,
     /** 提示引导 */
     Tooltip = 1,
-    /** 消息框引导 */
-    MessageBox = 2,
     /** 滑动引导 */
     Slide = 3,
 }
@@ -25,22 +23,16 @@ export enum GuideType {
  * 引导命令
  */
 export default class GuideCommand {
-    static tollTip: string = "";
-    static messageBox: string = "";
-
     static async doCommand(command: any) {
         switch (command.type) {
             case GuideType.Click:
                 await GuideCommand.doClick(command);
                 break;
             case GuideType.Tooltip:
-                GuideCommand.doTooltip(command);
-                break;
-            case GuideType.MessageBox:
-                GuideCommand.doMessageBox(command);
+                await GuideCommand.doTooltip(command);
                 break;
             case GuideType.Slide:
-                GuideCommand.doSlide(command);
+                await GuideCommand.doSlide(command);
                 break;
         }
     }
@@ -57,20 +49,17 @@ export default class GuideCommand {
         });
     }
 
-    static async doTooltip(command: { type: GuideType, data: string, time: number }) {
+    static async doTooltip(command: { type: GuideType, tooltip:string, data: string, time: number }) {
         return new Promise<void>(async (resolve, reject) => {
-            ViewManager.instance.showTooltip(this.tollTip, { content: command.data, resolve });
-            setTimeout(() => {
-                ViewManager.instance.closeTooltip(this.tollTip);
-                resolve();
-            }, command.time);
+            ViewManager.instance.showTooltip(command.tooltip, { content: command.data, resolve });
+            if (command.time) {
+                setTimeout(() => {
+                    ViewManager.instance.closeTooltip(command.tooltip);
+                }, command.time);
+            }
         });
     }
 
-    static async doMessageBox(command: any) {
-    }
-
     static async doSlide(command: any) {
-
     }
 }

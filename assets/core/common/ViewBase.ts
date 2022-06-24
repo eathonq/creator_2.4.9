@@ -72,7 +72,7 @@ export default class ViewBase extends cc.Component {
     protected start() { }
 
     protected onDestroy(): void {
-        this.doClose = null;
+        this._doClose = null;
     }
 
     private checkEditorComponent() {
@@ -83,10 +83,10 @@ export default class ViewBase extends cc.Component {
         }
     }
 
-    private doClose: Function = null;
+    private _doClose: Function = null;
     onCloseEvent(event: cc.Event.EventTouch, customEventData: string) {
-        if (this.doClose) {
-            this.doClose(this.viewName);
+        if (this._doClose) {
+            this._doClose(this.viewName);
         }
     }
 }

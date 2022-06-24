@@ -65,7 +65,7 @@ export default class GuideData extends cc.Component {
     onClickC() {
         console.log("onClickC");
 
-        cc.tween(this.btnC.node)
+        cc.tween(this.node)
             .delay(2)
             .call(() => {
                 this.createRandomButton("Button D");
@@ -89,13 +89,13 @@ export default class GuideData extends cc.Component {
         let self = this;
         node.on(cc.Node.EventType.TOUCH_END, () => {
             console.log(`点击了${node.name}`);
-            cc.tween(node)
+            node.destroy();
+            cc.tween(self.node)
                 .delay(2)
                 .call(() => {
                     if (name == "Button D") {
                         self.createRandomButton("Button E");
                     }
-                    node.destroy();
                 })
                 .start();
         });

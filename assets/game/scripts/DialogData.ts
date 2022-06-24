@@ -41,7 +41,7 @@ export default class DialogData extends cc.Component {
         if (this._data.title == undefined) this._data.title = "";
         if (this._data.content == undefined) this._data.content = "";
         if (this._data.buttons == undefined) this._data.buttons = MessageBoxButtons.None;
-        if (this._data.resolve == undefined) this._data.resolve = (result: DialogResult) => { };
+
 
         this.title.string = this._data.title;
         this.content.string = this._data.content;
@@ -61,18 +61,24 @@ export default class DialogData extends cc.Component {
         }
     }
 
-    onOKEvent(event: cc.Event.EventTouch, customEventData: string) {
-        this._data?.resolve(DialogResult.OK);
+    onOkEvent(event: cc.Event.EventTouch, customEventData: string) {
+        if (this._data && this._data.resolve) {
+            this._data.resolve(DialogResult.OK);
+        }
         this.node.getComponent(ViewBase).onCloseEvent(null, null);
     }
 
     onCancelEvent(event: cc.Event.EventTouch, customEventData: string) {
-        this._data?.resolve(DialogResult.Cancel);
+        if (this._data && this._data.resolve) {
+            this._data.resolve(DialogResult.Cancel);
+        }
         this.node.getComponent(ViewBase).onCloseEvent(null, null);
     }
 
     onCloseEvent(event: cc.Event.EventTouch, customEventData: string) {
-        this._data?.resolve(DialogResult.None);
+        if (this._data && this._data.resolve) {
+            this._data.resolve(DialogResult.None);
+        }
         this.node.getComponent(ViewBase).onCloseEvent(null, null);
     }
 }

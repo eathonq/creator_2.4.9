@@ -1642,7 +1642,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "OK Button",
+    "_name": "Ok Button",
     "_objFlags": 0,
     "_parent": {
       "__id__": 30
@@ -2050,7 +2050,7 @@
     },
     "component": "",
     "_componentId": "568f6CkNhRHPZgaFdpQUYsh",
-    "handler": "onOKEvent",
+    "handler": "onOkEvent",
     "customEventData": ""
   },
   {

@@ -6,22 +6,15 @@
  * email = vangagh@live.cn
  */
 
-const {ccclass, property} = cc._decorator;
+const { ccclass, property, menu } = cc._decorator;
 
 @ccclass
-export default class GuideMask extends cc.Component {
-
-    @property(cc.Label)
-    label: cc.Label = null;
-
-    @property
-    text: string = 'hello';
-
-    // LIFE-CYCLE CALLBACKS:
+@menu("guide/GuideMask")
+export default class GuideMask extends cc.Mask {
 
     // onLoad () {}
 
-    start () {
+    protected start() {
 
     }
 
