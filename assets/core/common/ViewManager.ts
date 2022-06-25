@@ -259,14 +259,14 @@ export default class ViewManager extends cc.Component {
     private defaultView: string = "";
 
     @property({
-        tooltip: "默认视图",
-        readonly: false
+        tooltip: "默认对话框",
+        readonly: true
     })
     private defaultDialog: string = "";
 
     @property({
-        tooltip: "默认视图",
-        readonly: false
+        tooltip: "默认提示框",
+        readonly: true
     })
     private defaultTooltip: string = "";
 

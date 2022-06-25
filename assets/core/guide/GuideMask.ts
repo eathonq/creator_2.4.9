@@ -1,9 +1,10 @@
-// Learn TypeScript:
-//  - https://docs.cocos.com/creator/manual/en/scripting/typescript.html
-// Learn Attribute:
-//  - https://docs.cocos.com/creator/manual/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
+/**
+ * CREATOR_2.4.9
+ * DateTime = Tue Jun 21 2022 17:17:58 GMT+0800 (中国标准时间)
+ * Author = eathon
+ * github = https://github.com/eathonq/creator_2.4.9.git
+ * email = vangagh@live.cn
+ */
 
 const { ccclass, property } = cc._decorator;
 
