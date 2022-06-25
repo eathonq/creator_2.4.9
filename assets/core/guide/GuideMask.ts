@@ -81,7 +81,6 @@ export default class GuideMask extends cc.Component {
 
         // 动画效果显示
         if (this._tween) this._tween.stop();
-        //this._guideMask.opacity = 0;
         this._tween = cc.tween(this._guideMask)
             .to(0.2, { opacity: 255 })
             .call(() => {
@@ -101,7 +100,6 @@ export default class GuideMask extends cc.Component {
 
         // 动画效果隐藏
         if (this._tween) this._tween.stop();
-        this._guideMask.opacity = 255;
         this._tween = cc.tween(this._guideMask)
             .to(0.5, { opacity: 0 })
             .call(() => {
