@@ -8,6 +8,7 @@
 
 import Locator from "../common/Locator";
 import ViewManager from "../common/ViewManager";
+import GuideMask from "./GuideMask";
 
 /** 引导类型 */
 export enum GuideType {
@@ -42,7 +43,9 @@ export default class GuideCommand {
             let root = cc.director.getScene();
             let node = await Locator.locateNode(root, command.data);
             if (node) {
+                GuideMask.highlight(node);
                 node.once(cc.Node.EventType.TOUCH_END, () => {
+                    GuideMask.clear();
                     resolve();
                 });
             }

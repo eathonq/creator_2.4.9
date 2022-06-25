@@ -24,23 +24,23 @@
         "__id__": 6
       },
       {
-        "__id__": 87
+        "__id__": 84
       }
     ],
     "_active": true,
     "_components": [
       {
-        "__id__": 91
+        "__id__": 88
       },
       {
-        "__id__": 92
+        "__id__": 89
       },
       {
-        "__id__": 93
+        "__id__": 90
       }
     ],
     "_prefab": {
-      "__id__": 94
+      "__id__": 91
     },
     "_opacity": 255,
     "_color": {
@@ -262,11 +262,11 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 85
+        "__id__": 82
       }
     ],
     "_prefab": {
-      "__id__": 86
+      "__id__": 83
     },
     "_opacity": 255,
     "_color": {
@@ -2846,8 +2846,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -51.951,
-        76.239,
+        -6.452,
+        8.832,
         0,
         0,
         0,
@@ -3215,101 +3215,33 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "Mask",
+    "_name": "Temp Sprite",
     "_objFlags": 0,
     "_parent": {
       "__id__": 6
-    },
-    "_children": [
-      {
-        "__id__": 80
-      }
-    ],
-    "_active": true,
-    "_components": [
-      {
-        "__id__": 83
-      }
-    ],
-    "_prefab": {
-      "__id__": 84
-    },
-    "_opacity": 255,
-    "_color": {
-      "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
-      "a": 255
-    },
-    "_contentSize": {
-      "__type__": "cc.Size",
-      "width": 960,
-      "height": 640
-    },
-    "_anchorPoint": {
-      "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
-    },
-    "_trs": {
-      "__type__": "TypedArray",
-      "ctor": "Float64Array",
-      "array": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        1,
-        1,
-        1,
-        1
-      ]
-    },
-    "_eulerAngles": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_skewX": 0,
-    "_skewY": 0,
-    "_is3DNode": false,
-    "_groupIndex": 0,
-    "groupIndex": 0,
-    "_id": ""
-  },
-  {
-    "__type__": "cc.Node",
-    "_name": "Background",
-    "_objFlags": 0,
-    "_parent": {
-      "__id__": 79
     },
     "_children": [],
     "_active": true,
     "_components": [
       {
-        "__id__": 81
+        "__id__": 80
       }
     ],
     "_prefab": {
-      "__id__": 82
+      "__id__": 81
     },
-    "_opacity": 200,
+    "_opacity": 100,
     "_color": {
       "__type__": "cc.Color",
-      "r": 0,
+      "r": 255,
       "g": 0,
       "b": 0,
       "a": 255
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 1200,
-      "height": 1200
+      "width": 20,
+      "height": 20
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -3350,7 +3282,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 80
+      "__id__": 79
     },
     "_enabled": true,
     "_materials": [
@@ -3385,41 +3317,7 @@
     "asset": {
       "__id__": 0
     },
-    "fileId": "71ATG/6epBDpXv9YB6AcHx",
-    "sync": false
-  },
-  {
-    "__type__": "1954dpsxChJb6g2ay5l67om",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 79
-    },
-    "_enabled": true,
-    "_materials": [
-      {
-        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
-      }
-    ],
-    "_spriteFrame": null,
-    "_type": 0,
-    "_segments": 364,
-    "_N$alphaThreshold": 0,
-    "_N$inverted": true,
-    "target": {
-      "__id__": 39
-    },
-    "_id": ""
-  },
-  {
-    "__type__": "cc.PrefabInfo",
-    "root": {
-      "__id__": 1
-    },
-    "asset": {
-      "__id__": 0
-    },
-    "fileId": "fb7OreCg9EOIwfMd9ZLxTO",
+    "fileId": "ffLi6AGG1I5rQRlG0KkEs0",
     "sync": false
   },
   {
@@ -3471,14 +3369,14 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 88
+        "__id__": 85
       },
       {
-        "__id__": 89
+        "__id__": 86
       }
     ],
     "_prefab": {
-      "__id__": 90
+      "__id__": 87
     },
     "_opacity": 255,
     "_color": {
@@ -3532,7 +3430,7 @@
     "_name": "Title<Label>",
     "_objFlags": 0,
     "node": {
-      "__id__": 87
+      "__id__": 84
     },
     "_enabled": true,
     "_materials": [
@@ -3565,7 +3463,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 87
+      "__id__": 84
     },
     "_enabled": true,
     "alignMode": 1,

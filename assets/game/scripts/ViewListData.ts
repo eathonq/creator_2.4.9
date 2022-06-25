@@ -10,7 +10,7 @@ import ViewManager from "../../core/common/ViewManager";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class ViewGideData extends cc.Component {
+export default class ViewListData extends cc.Component {
 
     @property({
         type: cc.Node,
@@ -33,7 +33,7 @@ export default class ViewGideData extends cc.Component {
                 let newItem = cc.instantiate(item);
                 newItem.active = true;
                 newItem.getComponent(cc.Label).string = name;
-                newItem.on(cc.Node.EventType.TOUCH_START, () => {
+                newItem.on(cc.Node.EventType.TOUCH_END, () => {
                     ViewManager.instance.show(name);
                 });
                 this.guideContent.addChild(newItem);
@@ -43,7 +43,7 @@ export default class ViewGideData extends cc.Component {
             let backItem = cc.instantiate(item);
             backItem.active = true;
             backItem.getComponent(cc.Label).string = "返回";
-            backItem.on(cc.Node.EventType.TOUCH_START, () => {
+            backItem.on(cc.Node.EventType.TOUCH_END, () => {
                 ViewManager.instance.backView();
             });
             this.guideContent.addChild(backItem);

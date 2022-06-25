@@ -1,56 +1,140 @@
+// Learn TypeScript:
+//  - https://docs.cocos.com/creator/manual/en/scripting/typescript.html
+// Learn Attribute:
+//  - https://docs.cocos.com/creator/manual/en/scripting/reference/attributes.html
+// Learn life-cycle callbacks:
+//  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
+
+const { ccclass, property } = cc._decorator;
+
 /**
- * CREATOR_2.4.9
- * DateTime = Thu Jun 23 2022 14:43:23 GMT+0800 (中国标准时间)
- * Author = eathon
- * github = https://github.com/eathonq/creator_2.4.9.git
- * email = vangagh@live.cn
+ * 引导管理器 Mask
+ * @note 请先在画布节点最后面添加GuideMask组件节点
  */
-
-const { ccclass, property, menu } = cc._decorator;
-
 @ccclass
-@menu("guide/GuideMask")
-export default class GuideMask extends cc.Mask {
+export default class GuideMask extends cc.Component {
 
-    @property(cc.Node)
-    private target: cc.Node = null;
+    @property(cc.Prefab)
+    private guideMask: cc.Prefab = null;
 
-    // onLoad () {}
-
-    private get graphics(): cc.Graphics {
-        return this['_graphics'];
+    protected onLoad() {
+        GuideMask._instance = this;
     }
 
     protected start() {
-        this.node.on(cc.Node.EventType.TOUCH_START, this.onTouchStart, this);
-        this.node.on(cc.Node.EventType.TOUCH_END, this.onTouchEnd, this);
-        this.node.on(cc.Node.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
+        if (CC_EDITOR) return;
 
-        this.graphicsNode(this.target);
-    }
-
-    private graphicsNode(node: cc.Node) {
-        if(CC_EDITOR) return;
-
-        let grp = this.graphics;
-        let nodePos = node.convertToWorldSpaceAR(cc.Vec2.ZERO);
-        let nodeSize = node.getContentSize();
-        let rect = cc.rect(nodePos.x, nodePos.y, nodeSize.width, nodeSize.height);
-        grp.clear();
-        grp.fillRect(rect.x - 960/2, rect.y-640/2, rect.width, rect.height);
-    }
-
-    onTouchCancel(touch: cc.Event.EventTouch) {
-        console.log("onTouchCancel");
-    }
-
-    onTouchEnd(touch: cc.Event.EventTouch) {
-        console.log("onTouchEnd");
-    }
-
-    onTouchStart(touch: cc.Event.EventTouch) {
-        console.log("onTouchStart");
+        this.initPrefab();
     }
 
     // update (dt) {}
+
+    private _guideMask: cc.Node = null;
+    private _mask: cc.Mask = null;
+    private initPrefab() {
+        if (!this.guideMask) return;
+        this._guideMask = cc.instantiate(this.guideMask);
+        this._mask = this._guideMask.getComponent(cc.Mask);
+        this.node.addChild(this._guideMask);
+
+        this._background = this._guideMask.getChildByName('Background');
+        this.initBackground();
+
+        this._guideMask.active = false;
+        this._guideMask.opacity = 0;
+    }
+
+    private _background: cc.Node = null;
+    private initBackground() {
+        this._background.on(cc.Node.EventType.TOUCH_START, (touch: cc.Event.EventTouch) => {
+            if (!this._target) return;
+
+            let touchListener = this._background['_touchListener'];
+
+            // 点击目标节点，放行点击
+            let rect = this._target.getBoundingBoxToWorld();
+            if (rect.contains(touch.getLocation())) {
+                touchListener.setSwallowTouches(false);
+            }
+            else {
+                touchListener.setSwallowTouches(true);
+            }
+        }, this);
+    }
+
+    private _target: cc.Node = null;
+    private _tween: cc.Tween = null;
+    private highlight(target: cc.Node) {
+        if (!target) return;
+        this._target = target;
+
+        this._guideMask.active = true;
+
+        let graphics: cc.Graphics = this._mask['_graphics'];
+        graphics.clear();
+
+        let rect = this._target.getBoundingBoxToWorld();
+        let p = this.node.convertToNodeSpaceAR(cc.v2(rect.x, rect.y));
+
+        graphics.fillRect(p.x, p.y, rect.width, rect.height);
+
+        // 动画效果显示
+        if (this._tween) this._tween.stop();
+        //this._guideMask.opacity = 0;
+        this._tween = cc.tween(this._guideMask)
+            .to(0.2, { opacity: 255 })
+            .call(() => {
+                this._tween = null;
+            })
+            .start();
+    }
+    
+    private clear() {
+        this._guideMask.active = true;
+        this._target = null;
+
+        let graphics: cc.Graphics = this._mask['_graphics'];
+        graphics.clear();
+
+        graphics.fillRect(0, 0, 0, 0);
+
+        // 动画效果隐藏
+        if (this._tween) this._tween.stop();
+        this._guideMask.opacity = 255;
+        this._tween = cc.tween(this._guideMask)
+            .to(0.5, { opacity: 0 })
+            .call(() => {
+                this._guideMask.active = false;
+                this._tween = null;
+            })
+            .start();
+    }
+
+    private static _instance: GuideMask = null;
+    /**
+     * 凸显目标节点
+     * @param target 目标节点 
+     * @returns 
+     */
+    static highlight(target: cc.Node) {
+        if (!GuideMask._instance) {
+            // cc.log('GuideMask is not initialized, please add GuideMask.prefab to canvas');
+            return;
+        }
+
+        GuideMask._instance.highlight(target);
+    }
+
+    /**
+     * 清除目标节点
+     * @returns 
+     */
+    static clear() {
+        if (!GuideMask._instance) {
+            // cc.log('GuideMask is not initialized, please add GuideMask.prefab to canvas');
+            return;
+        }
+
+        GuideMask._instance.clear();
+    }
 }

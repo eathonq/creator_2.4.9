@@ -75,7 +75,7 @@ export default class AStartPathData extends cc.Component {
         for (let row = 0; row < row_max; row++) {
             for (let col = 0; col < col_max; col++) {
                 let node = cc.instantiate(this.templates[0]);
-                node.on(cc.Node.EventType.TOUCH_START, () => {
+                node.on(cc.Node.EventType.TOUCH_END, () => {
                     //console.log(`${col},${row}`);
                     this.setOptions({ x: col, y: row });
                 }, this);
@@ -139,19 +139,19 @@ export default class AStartPathData extends cc.Component {
         this._options.push(this.wallNode);
         this._options.push(this.weightNode);
 
-        this.startNode.on(cc.Node.EventType.TOUCH_START, () => {
+        this.startNode.on(cc.Node.EventType.TOUCH_END, () => {
             this.animationOptions(0);
         }, this);
 
-        this.endNode.on(cc.Node.EventType.TOUCH_START, () => {
+        this.endNode.on(cc.Node.EventType.TOUCH_END, () => {
             this.animationOptions(1);
         }, this);
 
-        this.wallNode.on(cc.Node.EventType.TOUCH_START, () => {
+        this.wallNode.on(cc.Node.EventType.TOUCH_END, () => {
             this.animationOptions(2);
         }, this);
 
-        this.weightNode.on(cc.Node.EventType.TOUCH_START, () => {
+        this.weightNode.on(cc.Node.EventType.TOUCH_END, () => {
             this.animationOptions(3);
         }, this);
     }
