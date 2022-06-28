@@ -1,4 +1,5 @@
 # 项目目录结构说明
+```
     # assets
         # core              # 基础包
             # common            # 公共脚本
@@ -16,4 +17,5 @@
             # images            # 图片
             # sounds            # 音效
             # transitions       # 过渡动画(js版本，部分不兼容)
+```
 
