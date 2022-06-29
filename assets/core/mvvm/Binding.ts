@@ -36,6 +36,13 @@ enum BindingMode {
     OneWayToSource = 3,
 }
 
+/** 绑定数据类型 */
+// enum BindingDataType {
+//     String = 0,
+//     Number = 1,
+//     Boolean = 2,
+// }
+
 /** UI 数据绑定组件 */
 @ccclass
 @executeInEditMode

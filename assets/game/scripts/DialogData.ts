@@ -23,6 +23,12 @@ export default class DialogData extends cc.Component {
     ok: cc.Node = null;
 
     @property(cc.Node)
+    yes: cc.Node = null;
+
+    @property(cc.Node)
+    no: cc.Node = null;
+
+    @property(cc.Node)
     cancel: cc.Node = null;
 
     private _data: { title: string, content: string, buttons: MessageBoxButtons, resolve: Function } = null;
@@ -48,14 +54,32 @@ export default class DialogData extends cc.Component {
         switch (this._data.buttons) {
             case MessageBoxButtons.None:
                 this.ok.active = false;
+                this.yes.active = false;
+                this.no.active = false;
                 this.cancel.active = false;
                 break;
             case MessageBoxButtons.OK:
                 this.ok.active = true;
+                this.yes.active = false;
+                this.no.active = false;
                 this.cancel.active = false;
                 break;
             case MessageBoxButtons.OKCancel:
                 this.ok.active = true;
+                this.yes.active = false;
+                this.no.active = false;
+                this.cancel.active = true;
+                break;
+            case MessageBoxButtons.YesNo:
+                this.ok.active = false;
+                this.yes.active = true;
+                this.no.active = true;
+                this.cancel.active = false;
+                break;
+            case MessageBoxButtons.YesNoCancel:
+                this.ok.active = false;
+                this.yes.active = true;
+                this.no.active = true;
                 this.cancel.active = true;
                 break;
         }
@@ -64,6 +88,20 @@ export default class DialogData extends cc.Component {
     onOkEvent(event: cc.Event.EventTouch, customEventData: string) {
         if (this._data && this._data.resolve) {
             this._data.resolve(DialogResult.OK);
+        }
+        this.node.getComponent(ViewBase).onCloseEvent(null, null);
+    }
+
+    onYesEvent(event: cc.Event.EventTouch, customEventData: string) {
+        if (this._data && this._data.resolve) {
+            this._data.resolve(DialogResult.Yes);
+        }
+        this.node.getComponent(ViewBase).onCloseEvent(null, null);
+    }
+
+    onNoEvent(event: cc.Event.EventTouch, customEventData: string) {
+        if (this._data && this._data.resolve) {
+            this._data.resolve(DialogResult.No);
         }
         this.node.getComponent(ViewBase).onCloseEvent(null, null);
     }
