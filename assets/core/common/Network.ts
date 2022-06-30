@@ -65,7 +65,7 @@ class HttpRequestHelper {
      * @param url 请求地址 
      * @param callback 回调函数
      */
-    get(url: string, callback: (response: string, error?: number) => void) {
+    get(url: string, callback: (response: string, errStatus?: number) => void) {
         let xhr = new XMLHttpRequest();
         xhr.open("GET", url, true);
         // xhr.onprogress = function () {
@@ -83,6 +83,7 @@ class HttpRequestHelper {
             // 4: request finished and response is ready
 
             // xhr.status
+            // 0: 并发连接达到最大，未能连接到服务器
             // 200: "OK"
             // 403: "Forbidden"
             // 404: "Not Found"
@@ -105,7 +106,7 @@ class HttpRequestHelper {
      * @param data 请求数据
      * @param callback 回调函数
      */
-    post(url: string, data: any, callback: (response: string, error?: number) => void) {
+    post(url: string, data: any, callback: (response: string, errStatus?: number) => void) {
         let xhr = new XMLHttpRequest();
         xhr.open("POST", url, true);
         // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CORS
@@ -140,7 +141,7 @@ class HttpRequestHelper {
      * @param file 文件
      * @param callback 回调函数
      */
-    upload(url: string, file: File, callback: (response: string, error?: number) => void) {
+    upload(url: string, file: File, callback: (response: string, errStatus?: number) => void) {
         let xhr = new XMLHttpRequest();
         xhr.open("POST", url, true);
         xhr.onreadystatechange = function () {
@@ -163,9 +164,9 @@ class HttpRequestHelper {
      * @returns
      */
     async getAsync(url: string) {
-        return new Promise<{ response: string, error?: number }>((resolve, reject) => {
-            this.get(url, (response: string, error?: number) => {
-                resolve({ response: response, error: error });
+        return new Promise<{ response: string, errStatus?: number }>((resolve, reject) => {
+            this.get(url, (response: string, errStatus?: number) => {
+                resolve({ response, errStatus });
             });
         });
     }
@@ -177,9 +178,9 @@ class HttpRequestHelper {
      * @returns 
      */
     async postAsync(url: string, data: any) {
-        return new Promise<{ response: string, error?: number }>((resolve, reject) => {
-            this.post(url, data, (response: string, error?: number) => {
-                resolve({ response: response, error: error });
+        return new Promise<{ response: string, errStatus?: number }>((resolve, reject) => {
+            this.post(url, data, (response: string, errStatus?: number) => {
+                resolve({ response, errStatus });
             });
         });
     }
@@ -191,9 +192,9 @@ class HttpRequestHelper {
      * @returns 
      */
     async uploadAsync(url: string, file: File) {
-        return new Promise<{ response: string, error?: number }>((resolve, reject) => {
-            this.upload(url, file, (response: string, error?: number) => {
-                resolve({ response: response, error: error });
+        return new Promise<{ response: string, errStatus?: number }>((resolve, reject) => {
+            this.upload(url, file, (response: string, errStatus?: number) => {
+                resolve({ response, errStatus });
             });
         });
     }
