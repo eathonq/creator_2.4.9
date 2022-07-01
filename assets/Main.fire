@@ -155,7 +155,7 @@
     "viewContent": {
       "__id__": 5
     },
-    "defaultView": "GuideDemo",
+    "defaultView": "AnimationDemo",
     "defaultDialog": "DialogDemo",
     "defaultTooltip": "TooltipDemo",
     "_viewPrefabList": [
@@ -185,6 +185,9 @@
       },
       {
         "__uuid__": "c2a24406-f34e-4786-8143-b1fa494c1572"
+      },
+      {
+        "__uuid__": "02e66876-5940-44f4-9c74-c15471980a4a"
       }
     ],
     "_id": "91u3R7w9ZMI5ZpxuYTo8dw"
