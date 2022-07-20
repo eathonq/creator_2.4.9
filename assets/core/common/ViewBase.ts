@@ -72,7 +72,7 @@ export default class ViewBase extends cc.Component {
     protected start() { }
 
     protected onDestroy(): void {
-        this._doClose = null;
+        this.doClose = null;
     }
 
     private checkEditorComponent() {
@@ -83,10 +83,36 @@ export default class ViewBase extends cc.Component {
         }
     }
 
-    private _doClose: Function = null;
+    private doClose: Function = null;
     onCloseEvent(event: cc.Event.EventTouch, customEventData: string) {
-        if (this._doClose) {
-            this._doClose(this.viewName);
+        if (!customEventData) {
+            this.doClose?.(this.viewName);
+            return;
         }
+
+        let dadas = customEventData.split("&");
+        if (dadas[0].trim() == "") {
+            dadas[0] = this.viewName;
+        }
+        if (dadas[1] == undefined) {
+            dadas[1] = null;
+        }
+        this.doClose?.(dadas[0], dadas[1]);
+    }
+
+    protected doShow: (name: string, data?: any) => void = null;
+    onShowEvent(event: cc.Event.EventTouch, customEventData: string) {
+        if (!customEventData) {
+            return;
+        }
+
+        let dadas = customEventData.split("&");
+        if (dadas[0].trim() == "") {
+            return;
+        }
+        if (dadas[1] == undefined) {
+            dadas[1] = null;
+        }
+        this.doShow?.(dadas[0], dadas[1]);
     }
 }
