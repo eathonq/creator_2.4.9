@@ -188,7 +188,10 @@ class ViewStack {
         let index = this.viewList.findIndex(v => v.viewName === name);
         if (index >= 0) {
 
-            // 最后一个视图不需要关闭
+            // 已经是最上层视图，不需要再操作
+            if (index == this.viewList.length - 1) return true;
+
+            // 只剩一个视图，不需要关闭
             if (this.viewList.length == 1) return true;
 
             let viewData = this.viewList[index];
