@@ -40,7 +40,9 @@ export default class GuideData extends cc.Component {
     // update (dt) {}
 
     onClickStart() {
-        GuideManager.instance.run();
+        GuideManager.instance.start(step => {
+            console.log("************ step: " + step.name);
+        });
     }
 
     onClickReset() {

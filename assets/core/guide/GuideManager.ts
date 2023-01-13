@@ -48,10 +48,6 @@ export default class GuideManager {
     }
     //#endregion
 
-    // onLoad () {}
-    protected start() { }
-    // update (dt) {}
-
     private _tasks: GuideTask[] = [];
 
     /**
@@ -150,8 +146,11 @@ export default class GuideManager {
         this.setProgress(data.taskName, data.stepName);
     }
 
-    /** 运行引导 */
-    async run() {
+    /** 
+     * 开始引导
+     * @param onStepCallback 引导步骤回调
+     */
+    async start(onStepCallback?: (step: GuideStep) => void) {
         this.sortTask();
         this.linkStep();
         this.loadProgress();
@@ -161,10 +160,11 @@ export default class GuideManager {
         }
 
         while (this._currentStep) {
-            if(GUIDE_MANAGER_DEBUG) console.log("开始引导步骤: " + this._currentStep.name);
+            if (GUIDE_MANAGER_DEBUG) console.log("开始引导步骤: " + this._currentStep.name);
             let step = this._currentStep;
             this.saveProgress();
             await GuideCommand.doCommand(step.command);
+            onStepCallback?.(step);
             this._currentStep = step.nextStep;
         }
 
