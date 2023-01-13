@@ -8,24 +8,14 @@
 
 /** 实用工具 */
 export class Utils {
-    //#region instance
-    private static _instance: Utils;
-    public static get instance(): Utils {
-        if (!Utils._instance) {
-            Utils._instance = new Utils();
-        }
-        return Utils._instance;
-    }
-    //#endregion
-
     /**
-     * 获取异步图片
-     * @param path 图片路径 
-     * @returns SpriteFrame
+     * 获取图片
+     * @param path 图片路径（不包含后缀，相对路径从resources子目录算起）
+     * @returns Promise<cc.SpriteFrame>
      */
-    async getSpriteFrame(path: string): Promise<cc.SpriteFrame> {
+    static async getSpriteFrame(path: string): Promise<cc.SpriteFrame> {
         if (path.trim() === '') return null;
-        if (CC_EDITOR) return null;
+
         return new Promise<cc.SpriteFrame>((resolve, reject) => {
             cc.resources.load(path, cc.SpriteFrame, (err: any, spriteFrame: cc.SpriteFrame) => {
                 if (err) {
@@ -38,37 +28,25 @@ export class Utils {
     }
 
     /**
-     * 回调获取图片
-     * @param path 图片路径
-     * @param callback 回调函数
-     * @returns void
-     */
-    getSpriteFrameWithCallback(path: string, callback: (spriteFrame: cc.SpriteFrame) => void): void {
-        if (path.trim() === '') return callback(null);
-        if (CC_EDITOR) return callback(null);
-        cc.resources.load(path, cc.SpriteFrame, (err: any, spriteFrame: cc.SpriteFrame) => {
-            if (err) {
-                callback(null);
-            } else {
-                callback(spriteFrame);
-            }
-        });
-    }
-
-    /**
      * 设置精灵图片
-     * @param sprite 精灵 
-     * @param path 图片路径
-     * @returns void
+     * @param node 精灵节点或者精灵组件 
+     * @param path 图片路径（不包含后缀，相对路径从resources子目录算起）
      */
-    setSprite(sprite: cc.Sprite, path: string): void {
+    static setSprite(node: cc.Node | cc.Sprite, path: string): void {
         if (path.trim() === '') return;
-        if (CC_EDITOR) return;
-        cc.resources.load(path, cc.SpriteFrame, (err: any, spriteFrame: cc.SpriteFrame) => {
-            if (err) {
-                sprite.spriteFrame = null;
-            } else {
+
+        this.getSpriteFrame(path).then((spriteFrame: cc.SpriteFrame) => {
+            if (!spriteFrame) return;
+
+            if (node instanceof cc.Node) {
+                let sprite = node.getComponent(cc.Sprite);
+                if (!sprite) {
+                    sprite = node.addComponent(cc.Sprite);
+                }
                 sprite.spriteFrame = spriteFrame;
+            }
+            else {
+                node.spriteFrame = spriteFrame;
             }
         });
     }
